@@ -1,0 +1,151 @@
+{% extends "admin/challenges/update.html" %} {% block header %}
+<div class="alert alert-secondary" role="alert">
+  Geographic challenges require users to find a specific location on a map.
+  Points are awarded based on how close they get to the target location.
+</div>
+{% endblock %} {% block value %}
+
+<style>
+  #map-update {
+    height: 400px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    z-index: 1;
+  }
+  .dynamic-scoring {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color: #f8f9fa;
+  }
+</style>
+
+<div class="form-group">
+  <label for="value"
+    >Value<br />
+    <small class="form-text text-muted">
+      Points awarded for finding the correct location (or initial value for
+      dynamic scoring)
+    </small>
+  </label>
+  <input
+    type="number"
+    class="form-control"
+    name="value"
+    value="{{ challenge.value }}"
+    required
+  />
+</div>
+
+<!-- Dynamic Scoring Section -->
+<div class="dynamic-scoring">
+  <h6>Dynamic Scoring (Optional)</h6>
+  <p class="text-muted small">
+    Enable dynamic scoring to decrease challenge value after each solve. Leave
+    empty to use static scoring.
+  </p>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="initial"
+          >Initial Value<br />
+          <small class="form-text text-muted">Starting point value</small>
+        </label>
+        <input
+          type="number"
+          class="form-control"
+          name="initial"
+          value="{{ challenge.initial or '' }}"
+          placeholder="e.g., 500"
+        />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="minimum"
+          >Minimum Value<br />
+          <small class="form-text text-muted">Lowest possible value</small>
+        </label>
+        <input
+          type="number"
+          class="form-control"
+          name="minimum"
+          value="{{ challenge.minimum or '' }}"
+          placeholder="e.g., 100"
+        />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="decay"
+          >Decay Rate<br />
+          <small class="form-text text-muted">Solves to reach minimum</small>
+        </label>
+        <input
+          type="number"
+          class="form-control"
+          name="decay"
+          value="{{ challenge.decay or '' }}"
+          placeholder="e.g., 50"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <label
+    >Location Selection<br />
+    <small class="form-text text-muted"
+      >Click on the map to change the target location</small
+    >
+  </label>
+  <div id="map-update"></div>
+</div>
+
+<div class="form-group">
+  <label for="latitude">Latitude</label>
+  <input
+    type="text"
+    class="form-control"
+    name="latitude"
+    id="latitude"
+    value="{{ challenge.latitude }}"
+    required
+  />
+</div>
+
+<div class="form-group">
+  <label for="longitude">Longitude</label>
+  <input
+    type="text"
+    class="form-control"
+    name="longitude"
+    id="longitude"
+    value="{{ challenge.longitude }}"
+    required
+  />
+</div>
+
+<div class="form-group">
+  <label for="tolerance_radius"
+    >Tolerance Radius (meters)<br />
+    <small class="form-text text-muted">
+      Users within this radius will receive full points
+    </small>
+  </label>
+  <input
+    type="number"
+    class="form-control"
+    name="tolerance_radius"
+    min="1"
+    value="{{ challenge.tolerance_radius }}"
+    required
+  />
+</div>
+
+{% endblock %}

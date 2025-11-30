@@ -1,0 +1,126 @@
+{% extends "admin/challenges/update.html" %}
+{% block category %}
+<div class="form-group">
+    <label>
+        Category<br>
+        <small class="form-text text-muted">Challenge Category</small>
+    </label>
+    <input type="text" class="form-control chal-category" name="category" value="{{ challenge.category }}">
+</div>
+
+<!-- Challenge Type Selection -->
+<div class="form-group">
+    <label>Challenge Type:</label>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="challenge_type" id="single_image" value="single" 
+               {% if challenge.challenge_type == 'single' or not challenge.challenge_type %}checked{% endif %}>
+        <label class="form-check-label" for="single_image">
+            Single Image Challenge
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="challenge_type" id="multi_image" value="multi"
+               {% if challenge.challenge_type == 'multi' %}checked{% endif %}>
+        <label class="form-check-label" for="multi_image">
+            Multi-Image Challenge (Docker Compose)
+        </label>
+    </div>
+</div>
+
+<!-- Docker Image Selection -->
+<div class="form-group">
+    <label for="DockerImage" id='dockerimage_label'>Docker Image/Stack:
+        <i class="far fa-question-circle text-muted cursor-help" data-toggle="tooltip" data-placement="right" 
+           title="Select the Docker server and image for your challenge. Multi-image challenges will show [MULTI] prefix."></i>
+    </label>
+    <select id="dockerimage_select" name="docker_selection" class="form-control" required></select>
+</div>
+
+<!-- Multi-Image Options -->
+<div id="multi_image_options" class="form-group" style="{% if challenge.challenge_type != 'multi' %}display: none;{% endif %}">
+    <div class="row">
+        <div class="col-md-6">
+            <label for="primary_service">Primary Service:
+                <i class="far fa-question-circle text-muted cursor-help" data-toggle="tooltip" data-placement="right" 
+                   title="Which service should be displayed to users (the main entry point)"></i>
+            </label>
+            <select id="primary_service" name="primary_service" class="form-control">
+                <option value="">Auto-detect</option>
+                {% if challenge.primary_service %}
+                <option value="{{ challenge.primary_service }}" selected>{{ challenge.primary_service }}</option>
+                {% endif %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="connection_type">Connection Type:</label>
+            <select id="connection_type" name="connection_type" class="form-control">
+                <option value="tcp" {% if challenge.connection_type == 'tcp' or not challenge.connection_type %}selected{% endif %}>TCP (nc command)</option>
+                <option value="web" {% if challenge.connection_type == 'web' %}selected{% endif %}>Web (HTTP/HTTPS)</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Connection Type for Single Images -->
+<div id="single_image_options" class="form-group" style="{% if challenge.challenge_type == 'multi' %}display: none;{% endif %}">
+    <div class="row">
+        <div class="col-md-6">
+            <label for="connection_type_single">Connection Type:</label>
+            <select id="connection_type_single" name="connection_type" class="form-control">
+                <option value="tcp" {% if challenge.connection_type == 'tcp' or not challenge.connection_type %}selected{% endif %}>TCP (nc command)</option>
+                <option value="web" {% if challenge.connection_type == 'web' %}selected{% endif %}>Web (HTTP/HTTPS)</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="custom_subdomain">Custom Subdomain (Optional):
+                <i class="far fa-question-circle text-muted cursor-help" data-toggle="tooltip" data-placement="right" 
+                   title="Optional custom subdomain for web challenges (e.g., 'web1' for web1.L3m0nCTF.com)"></i>
+            </label>
+            <input type="text" id="custom_subdomain" name="custom_subdomain" class="form-control" 
+                   value="{{ challenge.custom_subdomain or '' }}" placeholder="e.g., web1">
+        </div>
+    </div>
+</div>
+
+<!-- Instance Duration -->
+<div class="form-group">
+    <label for="instance_duration">Instance Duration (minutes):
+        <i class="far fa-question-circle text-muted cursor-help" data-toggle="tooltip" data-placement="right" 
+           title="How long should containers run before automatic cleanup (5-60 minutes)"></i>
+    </label>
+    <input type="number" id="instance_duration" name="instance_duration" class="form-control" 
+           value="{{ challenge.instance_duration or 15 }}" min="5" max="60" required>
+    <small class="form-text text-muted">
+        Default: 15 minutes. Range: 5-60 minutes.
+    </small>
+</div>
+
+<!-- Environment Variables -->
+<div class="form-group">
+    <label for="environment_vars">Environment Variables (Optional):
+        <i class="far fa-question-circle text-muted cursor-help" data-toggle="tooltip" data-placement="right" 
+           title="Pass environment variables to containers in KEY=VALUE format. Keys must be UPPERCASE. One variable per line."></i>
+    </label>
+    <textarea id="environment_vars" name="environment_vars" class="form-control" rows="6" 
+              placeholder="API_KEY=your_api_key_value&#10;SECRET_FLAG=flag_value&#10;DATABASE_URL=connection_string&#10;DEBUG_MODE=false">{{ challenge.environment_vars or '' }}</textarea>
+    <small class="form-text text-muted">
+        <strong>Format:</strong> KEY=VALUE (one per line). Keys must be UPPERCASE. Lines starting with # are comments.
+        These will be passed to all container instances for this challenge.
+    </small>
+</div>
+{% endblock %}
+{% block footer %}
+<script>
+var CHALLENGE_DATA = {
+    docker_image: '{{ challenge.docker_image or "" }}',
+    challenge_type: '{{ challenge.challenge_type or "single" }}',
+    docker_images: {{ challenge.docker_images | tojson if challenge.docker_images else "null" }},
+    primary_service: '{{ challenge.primary_service or "" }}',
+    connection_type: '{{ challenge.connection_type or "tcp" }}',
+    custom_subdomain: '{{ challenge.custom_subdomain or "" }}',
+    instance_duration: {{ challenge.instance_duration or 15 }},
+    environment_vars: '{{ challenge.environment_vars or "" }}',
+    server_name: '{{ challenge.docker_config.name if challenge.docker_config else "" }}'
+};
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+[
+    {
+        "name": "Anti-Cheat",
+        "route": "/admin/anti_cheat/"
+    }
+]
