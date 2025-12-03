@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="container">
+  {% if request.path == '/' or request.path == '/index' %}
     {{ content | safe }}
-  </div>
+  {% else %}
+    <div class="container">
+      {{ content | safe }}
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block scripts %}
