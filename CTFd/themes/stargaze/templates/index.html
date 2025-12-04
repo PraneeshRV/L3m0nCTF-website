@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+<style>
+  body {
+	background-color: #0a0a0a;
+	color: #e5e5e5;
+  }
+  .neon-text-green {
+	text-shadow: 0 0 10px rgba(163, 230, 53, 0.5);
+  }
+  .neon-text-red {
+	text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+  }
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+	width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+	background: #0a0a0a; 
+  }
+  ::-webkit-scrollbar-thumb {
+	background: #333; 
+	border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+	background: #a3e635; 
+  }
+  
+  /* Utilities */
+  .icon-base {
+	width: 24px;
+	height: 24px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+	theme: {
+	  extend: {
+		fontFamily: {
+		  sans: ['Inter', 'sans-serif'],
+		  mono: ['JetBrains Mono', 'monospace'],
+		},
+		colors: {
+		  lemon: {
+			DEFAULT: '#a3e635', // lime-400
+			glow: '#bef264',    // lime-300
+			dark: '#3f6212',    // lime-800
+		  },
+		  neonred: {
+			DEFAULT: '#f87171', // red-400
+		  },
+		  dark: {
+			bg: '#0a0a0a',
+			surface: '#121212',
+			card: '#18181b',
+		  }
+		},
+		animation: {
+		  'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+		  'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+		},
+		keyframes: {
+		  fadeInUp: {
+			'0%': { opacity: '0', transform: 'translateY(20px)' },
+			'100%': { opacity: '1', transform: 'translateY(0)' },
+		  }
+		}
+	  }
+	}
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<div>
+	<section class="relative min-h-screen flex items-center justify-center pt-28 pb-20 overflow-hidden">
+		<div class="absolute inset-0 z-0">
+			<div class="absolute top-20 left-1/4 w-96 h-96 bg-lemon/5 rounded-full blur-[128px]"></div>
+			<div class="absolute bottom-20 right-1/4 w-96 h-96 bg-neonred/5 rounded-full blur-[128px]"></div>
+			<div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+		</div>
+      <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+			<!-- Main Logo -->
+			<div class="flex justify-center mb-10 h-32 md:h-48 relative items-center">
+				<img 
+					src="{{ url_for('views.files', path=Configs.ctf_logo) }}" 
+					alt="L3m0n CTF 2025" 
+					class="h-full w-auto object-contain drop-shadow-[0_0_35px_rgba(163,230,53,0.15)] animate-fade-in-up"
+					onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
+				/>
+				<!-- Fallback Text -->
+				<div class="hidden flex flex-col items-center justify-center">
+					<div class="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lemon to-white drop-shadow-[0_0_15px_rgba(163,230,53,0.3)]">
+						L3m0n
+					</div>
+					<div class="text-2xl md:text-3xl font-mono text-white tracking-[0.5em] mt-2">
+						CTF 2025
+					</div>
+				</div>
+			</div>
+        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-lemon/30 bg-lemon/10 backdrop-blur-md mb-8 animate-fade-in-up shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+				<span class="relative flex h-2.5 w-2.5">
+				  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lemon opacity-75"></span>
+				  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-lemon"></span>
+				</span>
+				<span class="text-sm font-mono font-bold text-lemon tracking-wide uppercase">Registration Open</span>
+			</div>
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6">
+				<span class="block text-transparent bg-clip-text bg-gradient-to-r from-lemon to-white">DECRYPT.</span>
+				<span class="block mt-2">EXPLOIT. WIN.</span>
+			</h1>
+        <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10 leading-relaxed">
+				The ultimate 24-hour Jeopardy-style Capture The Flag competition. 
+				Join the elite at <span class="text-white font-semibold">Amrita Vishwa Vidyapeetham</span>.
+			</p>
+        <div id="countdown" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
+				<div class="flex flex-col items-center bg-white/5 border border-white/10 rounded-lg p-4 min-w-[100px] backdrop-blur-sm hover:border-lemon/30 transition-colors duration-300">
+					<span id="days" class="text-4xl md:text-5xl font-mono font-bold text-white tabular-nums tracking-tighter">00</span>
+					<span class="text-xs text-lemon font-mono uppercase tracking-widest mt-2">Days</span>
+				</div>
+				<div class="flex flex-col items-center bg-white/5 border border-white/10 rounded-lg p-4 min-w-[100px] backdrop-blur-sm hover:border-lemon/30 transition-colors duration-300">
+					<span id="hours" class="text-4xl md:text-5xl font-mono font-bold text-white tabular-nums tracking-tighter">00</span>
+					<span class="text-xs text-lemon font-mono uppercase tracking-widest mt-2">Hours</span>
+				</div>
+				<div class="flex flex-col items-center bg-white/5 border border-white/10 rounded-lg p-4 min-w-[100px] backdrop-blur-sm hover:border-lemon/30 transition-colors duration-300">
+					<span id="minutes" class="text-4xl md:text-5xl font-mono font-bold text-white tabular-nums tracking-tighter">00</span>
+					<span class="text-xs text-lemon font-mono uppercase tracking-widest mt-2">Minutes</span>
+				</div>
+				<div class="flex flex-col items-center bg-white/5 border border-white/10 rounded-lg p-4 min-w-[100px] backdrop-blur-sm hover:border-lemon/30 transition-colors duration-300">
+					<span id="seconds" class="text-4xl md:text-5xl font-mono font-bold text-white tabular-nums tracking-tighter">00</span>
+					<span class="text-xs text-lemon font-mono uppercase tracking-widest mt-2">Seconds</span>
+				</div>
+			</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 border-t border-white/10 pt-8">
+				<div class="flex flex-col items-center gap-2">
+					<svg class="icon-base text-lemon" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+					<span class="text-sm font-mono text-gray-300">Dec 20-21, 2025</span>
+				</div>
+				<div class="flex flex-col items-center gap-2">
+					<svg class="icon-base text-lemon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/><circle cx="12" cy="4" r="4"/></svg>
+					<span class="text-sm font-mono text-gray-300">Coimbatore</span>
+				</div>
+				<div class="flex flex-col items-center gap-2">
+					<svg class="icon-base text-lemon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+					<span class="text-sm font-mono text-gray-300">24 Hours</span>
+				</div>
+				<div class="flex flex-col items-center gap-2">
+					<svg class="icon-base text-lemon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+					<span class="text-sm font-mono text-gray-300">Jeopardy Style</span>
+				</div>
+			</div>
+      </div>
+	</section>
+  <section>
+    <div class="max-w-7xl mx-auto px-6">
+			<div class="grid md:grid-cols-2 gap-16 items-center">
+              <div>
+					<h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+						About <span class="text-lemon">L3m0n CTF</span>
+					</h2>
+                	<p class="text-gray-400 mb-6 leading-relaxed">
+						Presented by <strong>TIFAC-CORE in Cyber Security</strong>, L3m0n CTF 2025 is more than just a competition—it's a battleground for the next generation of cybersecurity professionals.
+					</p>
+                	<p class="text-gray-400 mb-8 leading-relaxed">
+						Whether you're looking to challenge yourself, learn new attack vectors, or compete for glory, this event offers a platform to showcase your skills against the best student hackers in the region.
+					</p>
+                	<div class="p-6 bg-dark-card border border-white/10 rounded-lg mt-8 relative group hover:border-lemon/30 transition-all shadow-lg">
+						<div class="absolute top-0 left-0 w-1 h-full bg-lemon rounded-l-lg"></div>
+						<h3 class="font-mono text-lemon mb-2 flex items-center gap-2 uppercase tracking-wide text-sm font-bold">
+							<svg class="icon-base w-4 h-4" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/><circle cx="12" cy="4" r="4"/></svg>
+							Venue Details
+						</h3>
+						<p class="text-white font-bold text-lg">Amrita Vishwa Vidyapeetham</p>
+						<p class="text-gray-400">Coimbatore, Tamil Nadu</p>
+					</div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                	<div class="p-6 bg-dark-surface border border-white/5 hover:border-lemon/30 transition-colors rounded-lg group">
+						<div class="mb-4 p-3 bg-white/5 w-fit rounded-md group-hover:bg-white/10 transition-colors">
+							<svg class="icon-base text-lemon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+						</div>
+						<h3 class="text-white font-bold mb-2">Jeopardy Style</h3>
+						<p class="text-sm text-gray-500 leading-relaxed">Diverse categories including Web Security, Cryptography, Reverse Engineering, Binary Exploitation, and Forensics.</p>
+					</div>
+                	<div class="p-6 bg-dark-surface border border-white/5 hover:border-lemon/30 transition-colors rounded-lg group">
+						<div class="mb-4 p-3 bg-white/5 w-fit rounded-md group-hover:bg-white/10 transition-colors">
+							<svg class="icon-base text-neonred" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+						</div>
+						<h3 class="text-white font-bold mb-2">Team Based</h3>
+						<p class="text-sm text-gray-500 leading-relaxed">Form a squad of up to 4 students. Collaborate, strategize, and conquer challenges together.</p>
+					</div>
+                	<div class="p-6 bg-dark-surface border border-white/5 hover:border-lemon/30 transition-colors rounded-lg group">
+						<div class="mb-4 p-3 bg-white/5 w-fit rounded-md group-hover:bg-white/10 transition-colors">
+							<svg class="icon-base text-lemon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+						</div>
+						<h3 class="text-white font-bold mb-2">Real World</h3>
+						<p class="text-sm text-gray-500 leading-relaxed">Challenges designed to test practical skills in a dynamic, competitive environment.</p>
+					</div>
+                	<div class="p-6 bg-dark-surface border border-white/5 hover:border-lemon/30 transition-colors rounded-lg group">
+						<div class="mb-4 p-3 bg-white/5 w-fit rounded-md group-hover:bg-white/10 transition-colors">
+							<svg class="icon-base text-neonred" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+						</div>
+						<h3 class="text-white font-bold mb-2">In-Person Energy</h3>
+						<p class="text-sm text-gray-500 leading-relaxed">Experience the adrenaline of a live CTF at the Amrita Vishwa Vidyapeetham campus.</p>
+					</div>
+              </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+          Rewards & <span class="text-neonred">Opportunities</span>
+      </h2>
+      <p class="text-gray-400 max-w-2xl mx-auto mb-16">
+          We don't just offer bragging rights. Compete for a massive prize pool and career-launching opportunities.
+      </p>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="relative p-8 bg-dark-bg border border-lemon/20 rounded-xl overflow-hidden group hover:border-lemon transition-colors">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-lemon to-transparent"></div>
+            <svg class="icon-base w-12 h-12 text-lemon mb-6 mx-auto group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+            <h3 class="text-gray-400 font-mono mb-2 uppercase tracking-widest text-sm">Prize Pool</h3>
+            <div class="text-4xl md:text-5xl font-bold text-white mb-2 neon-text-green">
+                $14,500
+            </div>
+            <p class="text-sm text-gray-500">
+                Approximate value in vouchers & coupons from our premium sponsors.
+            </p>
+        </div>
+        <div class="relative p-8 bg-dark-bg border border-neonred/20 rounded-xl overflow-hidden group hover:border-neonred transition-colors">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neonred to-transparent"></div>
+            <svg class="icon-base w-12 h-12 text-neonred mb-6 mx-auto group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            <h3 class="text-gray-400 font-mono mb-2 uppercase tracking-widest text-sm">Career</h3>
+            <div class="text-2xl font-bold text-white mb-2">
+                Internship Opportunities
+            </div>
+            <p class="text-sm text-gray-500">
+                Top performers get direct access to interviews with industry leaders.
+            </p>
+        </div>
+        <div class="relative p-8 bg-dark-bg border border-white/10 rounded-xl overflow-hidden group hover:border-white/30 transition-colors">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-white/20 to-transparent"></div>
+            <svg class="icon-base w-12 h-12 text-gray-300 mb-6 mx-auto group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+            <h3 class="text-gray-400 font-mono mb-2 uppercase tracking-widest text-sm">Goodies</h3>
+            <div class="text-2xl font-bold text-white mb-2">
+                Exclusive Swag
+            </div>
+            <p class="text-sm text-gray-500">
+                Certificates, T-shirts, and digital badges for participants.
+            </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+

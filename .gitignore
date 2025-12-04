@@ -81,3 +81,8 @@ node_modules/
 # Flask Profiler files
 flask_profiler.sql
 critical_data_recovery.sql
+
+# Backups and Trash
+.trash/
+.data_backup*/
+.data_old/
