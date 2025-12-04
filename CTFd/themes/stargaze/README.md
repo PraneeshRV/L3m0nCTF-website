@@ -1,56 +1,48 @@
-# core-beta
+# 🌌 Stargaze — A Space-Themed CTFd Theme
 
-Rewritten version of the CTFd core theme to use Bootstrap 5, Alpine.js, and vite to improve upon the existing CTFd theme structure.
+<div align="center">
 
-## Subtree Installation
+**Transform your CTF platform into an immersive cosmic experience**
 
-### Add repo to themes folder
+*A modern, space-themed CTFd theme featuring an interactive starfield background, realistic constellations, and shooting stars.*
 
-```
-git subtree add --prefix CTFd/themes/core-beta git@github.com:CTFd/core-beta.git main --squash
-```
+</div>
 
-### Pull latest changes to subtree
+---
 
-```
-git subtree pull --prefix CTFd/themes/core-beta git@github.com:CTFd/core-beta.git main --squash
-```
+## ✨ Features
 
-### Subtree Gotcha
+### 🎨 Visual Effects
+- **Dynamic Starfield** — 300+ stars with realistic stellar classification colors (O/B blue-white to M-class red)
+- **Twinkling Animation** — Subtle, randomized star twinkling for an authentic night sky feel
+- **Shooting Stars** — Occasional meteor showers with smooth trails and gradual fade
+- **8 Constellations** — Orion, Ursa Major, Cassiopeia, Cygnus, Lyra, Scorpius, Leo, and Corona Borealis
+- **Parallax Effect** — Subtle star movement in response to mouse position
+- **Nebula Glow** — Soft radial gradients adding cosmic depth
 
-Make sure to use Merge Commits when dealing with the subtree here. For some reason Github's squash and commit uses the wrong line ending which causes issues with the subtree script: https://stackoverflow.com/a/47190256.
+### 🖥️ UI Enhancements
+- **Glassmorphism Design** — Semi-transparent panels with backdrop blur
+- **Custom Cursors** — Space-themed crosshair cursor with glow effects
+- **Dark Theme Optimized** — Fully designed for dark mode viewing
+- **Responsive Layout** — Works seamlessly on desktop and mobile devices
 
-## Creating Custom Theme (based on core-beta)
+### ⚡ Performance
+- **Canvas-based Rendering** — Hardware-accelerated animations
+- **Lazy Shooting Stars** — Spawns only when page is visible and focused
 
-To create a custom theme based on the core-beta one, here are the steps to follow:
+---
 
-1. Clone core-beta theme locally to a seperate folder
+## 📸 Preview
 
-   ```
-   git clone https://github.com/CTFd/core-beta.git custom-theme
-   ```
+<div align="center">
+![home](image.png)
+![users](image-1.png)
+</div>
 
-   To clarify the structure of the project, the `./assets` folder contains the uncompiled source files (the ones you can modify), while the `./static` directory contains the compiled ones.
+---
 
-2. Install [Yarn](https://classic.yarnpkg.com/en/) following the [official installation guides](https://classic.yarnpkg.com/en/docs/install).
+<div align="center">
 
-   - **Yarn** is a dependency management tool used to install and manage project packages
-   - **[Vite](https://vite.dev/guide/)** handles the frontend tooling in CTFd by building optimized assets that are served through Flask.
+⭐ **If you find this theme useful, consider giving it a star!** ⭐
 
-3. Run `yarn install` in the root of `custom-theme` folder to install the necessary Node packages including `vite`.
-
-4. Run the appropriate yarn build mode:
-
-   - Run `yarn dev` (this will run `vite build --watch`) while developing the theme.
-   - Run `yarn build` (which will run `vite build`) for a one-time build.
-     Vite allows you to preview changes instantly with hot reloading.
-
-5. Now, you can start your modifications in the `assets` folder. Each time you save, Vite will automatically recompile everything (assuming you are using `yarn dev`), and you can directly see the result by importing your compiled theme into a CTFd instance.
-   Note: You do not need the `node_modules` folder, you can simply zip the theme directory without it.
-
-6. When you are ready you can use `yarn build` to build the production copy of your theme.
-
-## Todo
-
-- Document how we are using Vite
-- Create a cookie cutter template package to use with Vite
+</div>
