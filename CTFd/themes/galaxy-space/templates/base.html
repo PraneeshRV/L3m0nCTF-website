@@ -126,10 +126,14 @@
       }
   </script>
 
+{% block theme_header %}
   {{ Configs.theme_header }}
+{% endblock %}
 </head>
 <body>
+{% block navbar %}
 {% include "components/navbar.html" %}
+{% endblock %}
 
 <main role="main">
   {% block content %}

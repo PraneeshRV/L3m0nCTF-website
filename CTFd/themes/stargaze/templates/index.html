@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
+{{ super() }}
 <style>
   body {
-	background-color: #0a0a0a;
+	background-color: transparent !important;
 	color: #e5e5e5;
+  }
+  .navbar {
+	display: none !important;
   }
   .neon-text-green {
 	text-shadow: 0 0 10px rgba(163, 230, 53, 0.5);
@@ -37,8 +41,41 @@
 	stroke-linecap: round;
 	stroke-linejoin: round;
   }
+  /* Force canvas to be visible */
+  #space-canvas {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+    background: black !important;
+  }
+  /* Custom cursor */
+  body, html {
+    cursor: url('/themes/stargaze/static/img/cursor_v2.png'), auto !important;
+  }
 </style>
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var nav = document.querySelector('.navbar');
+    if (nav) {
+        nav.remove();
+    }
+});
+</script>
+{% endblock %}
+
+{% block theme_header %}{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+
 
 {% block content %}
 <script src="https://cdn.tailwindcss.com"></script>

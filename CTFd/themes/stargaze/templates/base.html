@@ -12,8 +12,9 @@
     {{ Assets.css("assets/scss/main.scss") }}
     <style>
       body, html {
-        background: #000000 !important;
+        background: transparent !important;
         color: #fff; /* Ensure text is readable on dark background */
+        height: 100%;
       }
       .footer {
         background: rgba(0, 0, 0, 0.5); /* Semi-transparent footer */
@@ -91,13 +92,7 @@
       code {
         color: #ff79c6;
       }
-      /* Custom space-themed cursor */
-      body, html {
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="rgba(100,200,255,0.6)" stroke-width="1.5"/><circle cx="12" cy="12" r="2" fill="rgba(100,200,255,0.8)"/><line x1="12" y1="2" x2="12" y2="6" stroke="rgba(100,200,255,0.6)" stroke-width="1"/><line x1="12" y1="18" x2="12" y2="22" stroke="rgba(100,200,255,0.6)" stroke-width="1"/><line x1="2" y1="12" x2="6" y2="12" stroke="rgba(100,200,255,0.6)" stroke-width="1"/><line x1="18" y1="12" x2="22" y2="12" stroke="rgba(100,200,255,0.6)" stroke-width="1"/></svg>') 12 12, crosshair;
-      }
-      a, button, .btn {
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="rgba(255,200,100,0.8)" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="rgba(255,200,100,0.8)"/></svg>') 12 12, pointer;
-      }
+
     </style>
   {% endblock %}
 
@@ -126,10 +121,14 @@
       }
   </script>
 
+{% block theme_header %}
   {{ Configs.theme_header }}
+{% endblock %}
 </head>
 <body>
+{% block navbar %}
 {% include "components/navbar.html" %}
+{% endblock %}
 
 <main role="main">
   {% block content %}
@@ -156,7 +155,7 @@
 
 {{ Plugins.scripts }}
 
-<script src="{{ url_for('views.themes', path='js/space_v5.js') }}"></script>
+<script src="/themes/stargaze/static/js/space_v5.js"></script>
 {{ Configs.theme_footer }}
 </body>
 </html>

@@ -43,6 +43,10 @@ export default defineConfig({
               src: "./assets/sounds/**",
               dest: "static/sounds",
             },
+            {
+              src: "./assets/js/space_v5.js",
+              dest: "static/js",
+            },
           ],
           hook: "writeBundle",
         }),

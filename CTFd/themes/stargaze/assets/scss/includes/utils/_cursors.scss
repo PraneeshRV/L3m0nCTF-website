@@ -1,7 +1,10 @@
-.cursor-pointer {
-  cursor: pointer;
+body {
+  cursor: url('/themes/stargaze/static/img/cursor_v2.png'), auto;
 }
 
-.cursor-help {
-  cursor: help;
+a,
+button,
+.btn,
+.cursor-pointer {
+  cursor: url('/themes/stargaze/static/img/cursor_v2.png'), pointer;
 }
