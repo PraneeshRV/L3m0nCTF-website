@@ -1,7 +1,8 @@
 {
-  "name": "core-beta",
+  "name": "stargaze",
   "private": true,
   "version": "0.0.1",
+  "author": "Praneesh R V",
   "scripts": {
     "dev": "vite build --watch --mode=development",
     "build": "vite build",
