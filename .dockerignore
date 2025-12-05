@@ -17,3 +17,5 @@ CTFd/uploads/**/*
 **/__pycache__
 .venv*
 venv*
+.trash
+backups

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L3m0n Test Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(247, 220, 111, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+        }
+        
+        .lemon {
+            font-size: 80px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        h1 {
+            color: #f7dc6f;
+            margin: 20px 0;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(247, 220, 111, 0.5);
+        }
+        
+        p {
+            font-size: 1.2em;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .challenge-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #f7dc6f;
+        }
+        
+        .hint-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #f7dc6f, #f39c12);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .hint-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(247, 220, 111, 0.5);
+        }
+        
+        .flag-format {
+            font-family: monospace;
+            background: rgba(247, 220, 111, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #f7dc6f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lemon">🍋</div>
+        <h1>L3m0nCTF Test Challenge</h1>
+        <p>Welcome to the infrastructure test challenge!</p>
+        
+        <div class="challenge-box">
+            <p><strong>Challenge:</strong> Find the hidden flag on this server.</p>
+            <p>Flag format: <span class="flag-format">L3m0n{...}</span></p>
+        </div>
+        
+        <p>This is a simple web challenge to verify your CTF infrastructure is working correctly.</p>
+        
+        <a href="/hint" class="hint-link">Need a Hint?</a>
+    </div>
+</body>
+</html>

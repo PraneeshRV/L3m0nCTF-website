@@ -48,8 +48,15 @@ services:
     volumes:
       - .data/mysql:/var/lib/mysql
     networks:
-      internal:
-    command: [ mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0 ]
+      internal: # Enhanced durability settings for crash safety
+    command: [ mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0, --innodb_flush_log_at_trx_commit=1, --innodb_flush_method=O_DIRECT, --sync_binlog=1 ]
+    # Health check to ensure DB is ready
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   cache:
     image: redis:4
@@ -57,8 +64,8 @@ services:
     volumes:
       - .data/redis:/data
     networks:
-      internal:
-
+      internal: # Enable AOF persistence for better durability + RDB snapshots
+    command: redis-server --appendonly yes --appendfsync everysec --save 60 1 --save 300 10
 
 networks:
   default:

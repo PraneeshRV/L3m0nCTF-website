@@ -1253,41 +1253,31 @@ def create_container(docker, image, team, portbl, challenge_id=None):
 
         data = json.dumps(container_config)
         
-        if tls:
-            cert, verify = get_client_cert(docker)
-            r = requests.post(url="%s/containers/create?name=%s" % (URL_TEMPLATE, container_name), cert=cert,
-                          verify=verify, data=data, headers=headers)
-            if r.status_code not in [200, 201]:
-                current_app.logger.error(f"Container creation failed with status {r.status_code}: {r.text}")
-                raise Exception(f"Container creation failed: {r.text}")
-                
-            result = r.json()
+        # Use do_request helper for proper Unix socket and TLS support
+        r = do_request(docker, f'/containers/create?name={container_name}', 
+                       headers=headers, method='POST', data=data)
+        
+        if r is None:
+            current_app.logger.error(f"Container creation failed: No response from Docker API")
+            raise Exception(f"Container creation failed: No response from Docker API")
+        
+        if r.status_code not in [200, 201]:
+            current_app.logger.error(f"Container creation failed with status {r.status_code}: {r.text}")
+            raise Exception(f"Container creation failed: {r.text}")
             
-            s = requests.post(url="%s/containers/%s/start" % (URL_TEMPLATE, result['Id']), cert=cert, verify=verify,
-                              headers=headers)
-            if s.status_code not in [200, 204]:
-                current_app.logger.error(f"Container start failed with status {s.status_code}: {s.text}")
-                raise Exception(f"Container start failed: {s.text}")
-                
-            # Clean up the cert files:
-            for file_path in [*cert, verify]:
-                if file_path:
-                    Path(file_path).unlink(missing_ok=True)
-        else:
-            r = requests.post(url="%s/containers/create?name=%s" % (URL_TEMPLATE, container_name),
-                              data=data, headers=headers)
-            
-            if r.status_code not in [200, 201]:
-                current_app.logger.error(f"Container creation failed with status {r.status_code}: {r.text}")
-                raise Exception(f"Container creation failed: {r.text}")
-                
-            result = r.json()
-            
-            # name conflicts are not handled properly
-            s = requests.post(url="%s/containers/%s/start" % (URL_TEMPLATE, result['Id']), headers=headers)
-            if s.status_code not in [200, 204]:
-                current_app.logger.error(f"Container start failed with status {s.status_code}: {s.text}")
-                raise Exception(f"Container start failed: {s.text}")
+        result = r.json()
+        
+        # Start the container
+        s = do_request(docker, f'/containers/{result["Id"]}/start', 
+                       headers=headers, method='POST')
+        
+        if s is None:
+            current_app.logger.error(f"Container start failed: No response from Docker API")
+            raise Exception(f"Container start failed: No response from Docker API")
+        
+        if s.status_code not in [200, 204]:
+            current_app.logger.error(f"Container start failed with status {s.status_code}: {s.text}")
+            raise Exception(f"Container start failed: {s.text}")
         
         return result, data, docker, dynamic_flag  # Return the docker config used and dynamic flag
     except Exception as e:
@@ -2142,14 +2132,17 @@ class DockerChallengeType(BaseChallenge):
 
         submission = data["submission"].strip()
         
-        # Check for dynamic flag first
+        # Get current user/team info for anticheat
         if is_teams_mode():
-            user = get_current_team()
-            tracker = DockerChallengeTracker.query.filter_by(team_id=user.id, challenge=challenge.name).first()
+            current_user = get_current_team()
+            current_id = current_user.id
+            tracker = DockerChallengeTracker.query.filter_by(team_id=current_id, challenge=challenge.name).first()
         else:
-            user = get_current_user()
-            tracker = DockerChallengeTracker.query.filter_by(user_id=user.id, challenge=challenge.name).first()
-            
+            current_user = get_current_user()
+            current_id = current_user.id
+            tracker = DockerChallengeTracker.query.filter_by(user_id=current_id, challenge=challenge.name).first()
+        
+        # Check for dynamic flag - first check if it's the current user's flag
         if tracker and tracker.flag:
             if submission == tracker.flag:
                 return ChallengeResponse(
@@ -2157,6 +2150,55 @@ class DockerChallengeType(BaseChallenge):
                     message="Correct"
                 )
         
+        # ANTICHEAT: Check if the submitted flag belongs to another team/user
+        # This detects flag sharing between teams
+        if submission.startswith("L3m0n{") and submission.endswith("}"):
+            # This looks like a dynamic flag format, check if it belongs to someone else
+            if is_teams_mode():
+                other_tracker = DockerChallengeTracker.query.filter_by(
+                    challenge=challenge.name,
+                    flag=submission
+                ).filter(DockerChallengeTracker.team_id != current_id).first()
+            else:
+                other_tracker = DockerChallengeTracker.query.filter_by(
+                    challenge=challenge.name,
+                    flag=submission
+                ).filter(DockerChallengeTracker.user_id != current_id).first()
+            
+            if other_tracker:
+                # FLAG SHARING DETECTED!
+                # Log this cheating attempt
+                if is_teams_mode():
+                    victim_team = Teams.query.filter_by(id=other_tracker.team_id).first()
+                    victim_name = victim_team.name if victim_team else f"Team ID {other_tracker.team_id}"
+                    cheater_name = current_user.name
+                    current_app.logger.warning(
+                        f"🚨 ANTICHEAT ALERT: Team '{cheater_name}' (ID: {current_id}) submitted flag belonging to "
+                        f"Team '{victim_name}' for challenge '{challenge.name}'. "
+                        f"Flag: {submission[:20]}..."
+                    )
+                else:
+                    victim_user = Users.query.filter_by(id=other_tracker.user_id).first()
+                    victim_name = victim_user.name if victim_user else f"User ID {other_tracker.user_id}"
+                    cheater_name = current_user.name
+                    current_app.logger.warning(
+                        f"🚨 ANTICHEAT ALERT: User '{cheater_name}' (ID: {current_id}) submitted flag belonging to "
+                        f"User '{victim_name}' for challenge '{challenge.name}'. "
+                        f"Flag: {submission[:20]}..."
+                    )
+                
+                # Record the cheating attempt in a special table or as a fail with special marker
+                # For now, we'll log it and return a special message
+                # The admin can review logs to take action
+                
+                # Return incorrect but with a hidden warning
+                # Don't reveal that we detected cheating (to avoid tipping off cheaters)
+                return ChallengeResponse(
+                    status="incorrect",
+                    message="Incorrect"
+                )
+        
+        # Check static flags as fallback
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
         for flag in flags:
             if get_flag_class(flag.type).compare(flag, submission):
