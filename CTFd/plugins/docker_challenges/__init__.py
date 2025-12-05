@@ -114,9 +114,60 @@ class DockerChallengeTracker(db.Model):
     is_primary = db.Column("is_primary", db.Boolean, default=False)  # Primary service flag for port display
     network_name = db.Column("network_name", db.String(128), nullable=True)  # Docker network name
     flag = db.Column("flag", db.String(128), nullable=True)  # Dynamic flag for this container
+    mana_cost = db.Column("mana_cost", db.Integer, default=0)  # Mana cost for this instance (for reclaim on stop)
     
     # Relationship to get server info
     docker_config = db.relationship('DockerConfig', backref='active_containers')
+
+
+class TeamMana(db.Model):
+    """
+    Mana tracking for teams/users.
+    Based on ctfer.io challenge-manager mana system.
+    """
+    __tablename__ = 'team_mana'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, unique=True, nullable=True, index=True)  # For team mode
+    user_id = db.Column(db.Integer, unique=True, nullable=True, index=True)  # For user mode
+    current_mana = db.Column(db.Integer, default=100)
+    max_mana = db.Column(db.Integer, default=100)
+    
+    @staticmethod
+    def get_or_create(team_id=None, user_id=None, default_mana=100):
+        """Get existing mana record or create new one with default mana."""
+        if team_id:
+            mana = TeamMana.query.filter_by(team_id=team_id).first()
+            if not mana:
+                mana = TeamMana(team_id=team_id, current_mana=default_mana, max_mana=default_mana)
+                db.session.add(mana)
+                db.session.commit()
+            return mana
+        elif user_id:
+            mana = TeamMana.query.filter_by(user_id=user_id).first()
+            if not mana:
+                mana = TeamMana(user_id=user_id, current_mana=default_mana, max_mana=default_mana)
+                db.session.add(mana)
+                db.session.commit()
+            return mana
+        return None
+    
+    def can_afford(self, cost):
+        """Check if team/user has enough mana."""
+        return self.current_mana >= cost
+    
+    def deduct(self, cost):
+        """Deduct mana. Returns True if successful."""
+        if self.current_mana >= cost:
+            self.current_mana -= cost
+            db.session.commit()
+            return True
+        return False
+    
+    def refund(self, cost):
+        """Refund mana when stopping instance. Capped at max_mana."""
+        self.current_mana = min(self.current_mana + cost, self.max_mana)
+        db.session.commit()
 
 class DockerConfigForm(FlaskForm):
     id = HiddenField()
@@ -2290,6 +2341,7 @@ class DockerChallenge(Challenges):
     instance_duration = db.Column("instance_duration", db.Integer, default=15)  # Duration in minutes
     custom_subdomain = db.Column("custom_subdomain", db.String(128), nullable=True)  # Optional custom subdomain
     environment_vars = db.Column("environment_vars", db.Text, nullable=True)  # Environment variables (KEY=VALUE format, one per line)
+    mana_cost = db.Column("mana_cost", db.Integer, default=25)  # Mana cost to launch this challenge
     
     # Relationship to get server info
     docker_config = db.relationship('DockerConfig')
@@ -2421,6 +2473,26 @@ class ContainerAPI(Resource):
                 traceback.print_exc()
                 return {"success": False, "message": "Failed to get user session"}, 500
             
+            # MANA SYSTEM: Check if team/user has enough mana to launch this challenge
+            mana_cost = docker_challenge_obj.mana_cost if docker_challenge_obj and docker_challenge_obj.mana_cost else 25
+            
+            if is_teams_mode():
+                team_mana = TeamMana.get_or_create(team_id=session.id)
+            else:
+                team_mana = TeamMana.get_or_create(user_id=session.id)
+            
+            # Only check mana for new container creation (not for stop/revert operations)
+            if not request.args.get('stopcontainer'):
+                if not team_mana.can_afford(mana_cost):
+                    return {
+                        "success": False, 
+                        "message": f"Insufficient mana! You need {mana_cost} mana but only have {team_mana.current_mana}/{team_mana.max_mana}. Stop an existing instance to reclaim mana.",
+                        "mana_error": True,
+                        "current_mana": team_mana.current_mana,
+                        "max_mana": team_mana.max_mana,
+                        "required_mana": mana_cost
+                    }, 403
+            
             containers = DockerChallengeTracker.query.all()
             
             # Clean up expired containers first (older than 2 hours)
@@ -2490,6 +2562,9 @@ class ContainerAPI(Resource):
             # Delete when requested (CHECK THIS FIRST, before checking expiration)
             if check != None and request.args.get('stopcontainer'):
                 try:
+                    # MANA SYSTEM: Refund mana when stopping container
+                    mana_to_refund = check.mana_cost if check.mana_cost else mana_cost
+                    
                     if is_multi_image or (hasattr(check, 'stack_id') and check.stack_id):
                         # Multi-image challenge - delete entire stack
                         if check.stack_id and check.docker_config:
@@ -2510,7 +2585,18 @@ class ContainerAPI(Resource):
                             DockerChallengeTracker.query.filter_by(user_id=session.id, challenge=challenge).delete()
                     
                     db.session.commit()
-                    return {"success": True, "result": "Container(s) stopped"}
+                    
+                    # MANA SYSTEM: Refund mana to team/user
+                    team_mana.refund(mana_to_refund)
+                    current_app.logger.info(f"⚡ Mana refunded: +{mana_to_refund} to {'team' if is_teams_mode() else 'user'} {session.id}. New balance: {team_mana.current_mana}/{team_mana.max_mana}")
+                    
+                    return {
+                        "success": True, 
+                        "result": "Container(s) stopped",
+                        "mana_refunded": mana_to_refund,
+                        "current_mana": team_mana.current_mana,
+                        "max_mana": team_mana.max_mana
+                    }
                 except Exception as e:
                     current_app.logger.error(f"Error stopping container: {str(e)}")
                     import traceback
@@ -2646,11 +2732,16 @@ class ContainerAPI(Resource):
                             service_name=container_info['service'],
                             is_primary=container_info['is_primary'],
                             network_name=network_name,
-                            flag=dynamic_flag
+                            flag=dynamic_flag,
+                            mana_cost=mana_cost if container_info['is_primary'] else 0  # Only track mana on primary
                         )
                         db.session.add(entry)
                     
                     db.session.commit()
+                    
+                    # MANA SYSTEM: Deduct mana on successful multi-container creation
+                    team_mana.deduct(mana_cost)
+                    current_app.logger.info(f"⚡ Mana deducted: -{mana_cost} from {'team' if is_teams_mode() else 'user'} {session.id}. New balance: {team_mana.current_mana}/{team_mana.max_mana}")
                     
                     # Return connection info for the primary service
                     primary_container = next((c for c in containers if c['is_primary']), containers[0])
@@ -2659,7 +2750,10 @@ class ContainerAPI(Resource):
                         "result": f"Container stack created successfully with {len(containers)} containers",
                         "hostname": display_host,
                         "port": primary_container['ports'][0] if primary_container['ports'] else None,
-                        "revert_time": unix_time(datetime.utcnow()) + instance_duration
+                        "revert_time": unix_time(datetime.utcnow()) + instance_duration,
+                        "mana_cost": mana_cost,
+                        "current_mana": team_mana.current_mana,
+                        "max_mana": team_mana.max_mana
                     }
                     current_app.logger.info(f"Returning multi-container response: {response_data}")
                     return response_data
@@ -2698,16 +2792,25 @@ class ContainerAPI(Resource):
                         host=display_host,
                         challenge=challenge,
                         docker_config_id=docker.id,
-                        flag=dynamic_flag
+                        flag=dynamic_flag,
+                        mana_cost=mana_cost  # Store mana cost for refund on stop
                     )
                     db.session.add(entry)
                     db.session.commit()
+                    
+                    # MANA SYSTEM: Deduct mana on successful container creation
+                    team_mana.deduct(mana_cost)
+                    current_app.logger.info(f"⚡ Mana deducted: -{mana_cost} from {'team' if is_teams_mode() else 'user'} {session.id}. New balance: {team_mana.current_mana}/{team_mana.max_mana}")
+                    
                     return {
                         "success": True,
                         "result": "Container created successfully",
                         "hostname": display_host,
                         "port": port_list[0] if port_list else None,
-                        "revert_time": unix_time(datetime.utcnow()) + instance_duration
+                        "revert_time": unix_time(datetime.utcnow()) + instance_duration,
+                        "mana_cost": mana_cost,
+                        "current_mana": team_mana.current_mana,
+                        "max_mana": team_mana.max_mana
                     }
                 except Exception as e:
                     current_app.logger.error(f"Error creating container: {str(e)}")
@@ -2836,9 +2939,19 @@ class DockerStatus(Resource):
             except Exception as e:
                 current_app.logger.error(f"Error removing expired container from DB: {str(e)}")
         
+        # Get mana info for current team/user
+        if is_teams_mode():
+            team_mana = TeamMana.get_or_create(team_id=session.id)
+        else:
+            team_mana = TeamMana.get_or_create(user_id=session.id)
+        
         return {
             'success': True,
-            'data': data
+            'data': data,
+            'mana': {
+                'current': team_mana.current_mana,
+                'max': team_mana.max_mana
+            }
         }
 
 

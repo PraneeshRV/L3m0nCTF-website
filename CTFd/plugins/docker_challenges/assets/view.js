@@ -339,12 +339,12 @@ function get_docker_status(container) {
 
         // If no active container found, show launch button
         if (!containerFound) {
-            resetToNormalState(container);
+            resetToNormalState(container, result.mana);
         }
     })
         .catch(error => {
-            // On error, show the launch button
-            resetToNormalState(container);
+            // On error, show the launch button with default mana
+            resetToNormalState(container, null);
         });
 }
 
@@ -572,41 +572,87 @@ function start_container(container) {
     });
 }
 
-function resetToNormalState(container) {
+function resetToNormalState(container, manaInfo) {
     // Clear any existing timers
     if (statusIntervals[container]) {
         clearInterval(statusIntervals[container]);
         delete statusIntervals[container];
     }
 
-    // Reset the UI to show the normal launch button
+    // Get mana cost from challenge data (default 25 if not set)
+    const manaCost = CTFd._internal.challenge.data.mana_cost || 25;
+
+    // Get current mana from API response or use defaults
+    const currentMana = manaInfo ? manaInfo.current : 100;
+    const maxMana = manaInfo ? manaInfo.max : 100;
+    const manaPercent = Math.round((currentMana / maxMana) * 100);
+
+    // Determine if user can afford this challenge
+    const canAfford = currentMana >= manaCost;
+    const launchButtonStyle = canAfford
+        ? `background: linear-gradient(135deg, #3f6212 0%, #4d7c0f 50%, #65a30d 100%);
+           border: 1px solid rgba(163, 230, 53, 0.3);
+           cursor: pointer;`
+        : `background: linear-gradient(135deg, #374151 0%, #4b5563 50%, #6b7280 100%);
+           border: 1px solid rgba(156, 163, 175, 0.3);
+           cursor: not-allowed;
+           opacity: 0.7;`;
+
+    // Reset the UI to show the normal launch button with mana bar
     const dockerContainer = CTFd.lib.$('#docker_container');
     const originalHTML = `
         <div style="text-align: center; padding: 20px 0;">
+            <!-- Mana Bar -->
+            <div class="mana-bar-container" style="
+                background: rgba(10, 10, 10, 0.8);
+                border: 1px solid rgba(163, 230, 53, 0.25);
+                border-radius: 12px;
+                padding: 12px 20px;
+                margin-bottom: 20px;
+                display: inline-block;
+                min-width: 200px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
+                    <span style="font-size: 18px;">⚡</span>
+                    <span style="color: #a3e635; font-weight: 600; font-size: 16px;">${currentMana} / ${maxMana}</span>
+                    <span style="color: #9ca3af; font-size: 12px;">MANA</span>
+                </div>
+                <div style="
+                    background: rgba(0, 0, 0, 0.5);
+                    border-radius: 6px;
+                    height: 8px;
+                    overflow: hidden;">
+                    <div style="
+                        background: linear-gradient(90deg, #3f6212, #65a30d, #a3e635);
+                        height: 100%;
+                        width: ${manaPercent}%;
+                        transition: width 0.3s ease;
+                        border-radius: 6px;"></div>
+                </div>
+            </div>
+            
             <div class="description" style="color: #9ca3af; font-size: 13px; margin-bottom: 20px;">Deploy your challenge instance</div>
             <div class="docker-control-panel">
                 <div class="docker-launch-section">
-                    <button onclick="start_container('${container}');" style="
-                        background: linear-gradient(135deg, #3f6212 0%, #4d7c0f 50%, #65a30d 100%);
-                        border: 1px solid rgba(163, 230, 53, 0.3);
+                    <button onclick="${canAfford ? `start_container('${container}');` : `alert('Insufficient mana! You need ${manaCost} but only have ${currentMana}. Stop an existing instance to reclaim mana.');`}" style="
+                        ${launchButtonStyle}
                         border-radius: 12px;
                         color: #ffffff;
                         padding: 14px 36px;
                         font-size: 15px;
                         font-weight: 600;
-                        cursor: pointer;
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;
                         gap: 10px;
-                        min-width: 180px;
+                        min-width: 200px;
                         box-shadow: 0 4px 20px rgba(163, 230, 53, 0.25);
                         transition: all 0.3s ease;
                         text-transform: uppercase;
                         letter-spacing: 0.5px;">
                         <i class="fas fa-rocket" style="font-size: 14px;"></i>
-                        Launch Instance
+                        Launch (${manaCost} ⚡)
                     </button>
+                    ${!canAfford ? `<div style="color: #f87171; font-size: 12px; margin-top: 8px;">Insufficient mana! Stop an instance to reclaim.</div>` : ''}
                 </div>
             </div>
         </div>
