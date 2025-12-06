@@ -35,6 +35,8 @@ import CTFd.utils.scores
 from CTFd.api.v1.challenges import ChallengeList, Challenge
 from flask_restx import Namespace, Resource
 from flask import request, Blueprint, jsonify, abort, render_template, url_for, redirect, session, current_app
+print("DEBUG: LOADED CLEAN MODULE v2")
+import time
 # from flask_wtf import FlaskForm
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -2746,7 +2748,7 @@ class ContainerAPI(Resource):
                         "revert_time": unix_time(datetime.utcnow()) + instance_duration,
                         "mana": get_mana_info_for_response()
                     }
-                    response_data.update(mana_response)
+
                     current_app.logger.info(f"Returning multi-container response: {response_data}")
                     return response_data
                 except Exception as e:
@@ -2802,7 +2804,7 @@ class ContainerAPI(Resource):
                         "revert_time": unix_time(datetime.utcnow()) + instance_duration,
                         "mana": get_mana_info_for_response()
                     }
-                    response.update(mana_response)
+
                     return response
                 except Exception as e:
                     current_app.logger.error(f"Error creating container: {str(e)}")
