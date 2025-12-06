@@ -2349,8 +2349,61 @@ class DockerChallenge(Challenges):
 container_namespace = Namespace("container", description='Endpoint to interact with containers')
 
 
-@container_namespace.route("", methods=['POST', 'GET'])
+@container_namespace.route("", methods=['POST', 'GET', 'DELETE'])
 class ContainerAPI(Resource):
+    @authed_only
+    def delete(self):
+        try:
+            data = request.get_json()
+            instance_id = data.get('instance_id')
+            
+            if not instance_id:
+                return {"success": False, "message": "No instance_id specified"}, 400
+                
+            if is_teams_mode():
+                session = get_current_team()
+                tracker = DockerChallengeTracker.query.filter_by(team_id=session.id, instance_id=instance_id).first()
+            else:
+                session = get_current_user()
+                tracker = DockerChallengeTracker.query.filter_by(user_id=session.id, instance_id=instance_id).first()
+                
+            if not tracker:
+                return {"success": False, "message": "Instance not found or not owned by you"}, 404
+                
+            # Perform deletion
+            try:
+                mana_to_reclaim = tracker.mana_cost if tracker.mana_cost else 0
+                
+                if tracker.stack_id and tracker.docker_config:
+                    # Multi-container stack
+                    delete_compose_stack(tracker.docker_config, tracker.stack_id)
+                elif tracker.docker_config:
+                    # Single container
+                    delete_container(tracker.docker_config, tracker.instance_id)
+                    db.session.delete(tracker)
+                    db.session.commit()
+                else:
+                    # Fallback just in case
+                    db.session.delete(tracker)
+                    db.session.commit()
+                
+                current_app.logger.info(f"Container stopped via API - mana reclaimed: +{mana_to_reclaim}")
+                
+                return {
+                    "success": True, 
+                    "result": "Instance stopped",
+                    "mana_reclaimed": mana_to_reclaim,
+                    "mana": get_mana_info_for_response()
+                }
+                
+            except Exception as e:
+                current_app.logger.error(f"Error stopping container in DELETE: {str(e)}")
+                return {"success": False, "message": "Failed to stop container"}, 500
+                
+        except Exception as e:
+            current_app.logger.error(f"Error in ContainerAPI.delete(): {str(e)}")
+            return {"success": False, "message": "Internal server error"}, 500
+
     @authed_only
     # I wish this was Post... Issues with API/CSRF and whatnot. Open to a Issue solving this.
     def get(self):
