@@ -1,48 +1,44 @@
-# 🌌 Stargaze — A Space-Themed CTFd Theme
+# Stargaze Theme 🍋
 
-<div align="center">
+A premium, glass-morphism dark theme for CTFd with vibrant lemon/lime accents. Features a stunning Tailwind CSS homepage and custom-styled components.
 
-**Transform your CTF platform into an immersive cosmic experience**
+## 📸 Showcase
 
-*A modern, space-themed CTFd theme featuring an interactive starfield background, realistic constellations, and shooting stars.*
-
-</div>
-
----
+| | |
+|:-------------------------:|:-------------------------:|
+| **Homepage** <br> ![Home](images/image-2.png) | **Challenges** <br> ![Challenges](images/image.png) |
+| **User Profile** <br> ![User](images/image-1.png) | **Teams List** <br> ![Teams](images/image-3.png) |
+| **Team Profile** <br> ![Team](images/image-4.png) | **Scoreboard** <br> ![Scoreboard](images/image-5.png) |
 
 ## ✨ Features
 
-### 🎨 Visual Effects
-- **Dynamic Starfield** — 300+ stars with realistic stellar classification colors (O/B blue-white to M-class red)
-- **Twinkling Animation** — Subtle, randomized star twinkling for an authentic night sky feel
-- **Shooting Stars** — Occasional meteor showers with smooth trails and gradual fade
-- **8 Constellations** — Orion, Ursa Major, Cassiopeia, Cygnus, Lyra, Scorpius, Leo, and Corona Borealis
-- **Parallax Effect** — Subtle star movement in response to mouse position
-- **Nebula Glow** — Soft radial gradients adding cosmic depth
+- **Glass-morphism Design**: Frosted glass panels, transparent tables, and deep space backdrops.
+- **Dynamic Star Field**: Interactive canvas background with glowing stars and shooting stars that react to user presence.
+- **Tailwind Homepage**: A completely custom homepage built with Tailwind CSS (served via CDN).
+- **Responsive**: Fully mobile-optimized layout.
 
-### 🖥️ UI Enhancements
-- **Glassmorphism Design** — Semi-transparent panels with backdrop blur
-- **Custom Cursors** — Space-themed crosshair cursor with glow effects
-- **Dark Theme Optimized** — Fully designed for dark mode viewing
-- **Responsive Layout** — Works seamlessly on desktop and mobile devices
+## 📦 Installation
 
-### ⚡ Performance
-- **Canvas-based Rendering** — Hardware-accelerated animations
-- **Lazy Shooting Stars** — Spawns only when page is visible and focused
+1.  Copy the `stargaze` folder into your CTFd `themes` directory:
+    ```bash
+    cp -r stargaze /path/to/CTFd/themes/
+    ```
+2.  Log in to your CTFd Admin Panel.
+3.  Go to **Config** > **Themes**.
+4.  Select **stargaze** and click **Update**.
 
----
+## 🛠️ Customization
 
-## 📸 Preview
+### Homepage
+The homepage (`templates/index.html`) uses Tailwind CSS via CDN. You can edit the structure directly in that file. It automatically pulls your CTF name and start time from the CTFd Config.
 
-<div align="center">
-![home](image.png)
-![users](image-1.png)
-</div>
+### Colors
+Core theme colors are defined in `assets/scss/main.scss` and `templates/base.html` (CSS Variables).
 
----
-
-<div align="center">
-
-⭐ **If you find this theme useful, consider giving it a star!** ⭐
-
-</div>
+```css
+:root {
+  --lemon: #ccff00;
+  --lemon-dim: #a3e635;
+  --lemon-glow: rgba(204, 255, 0, 0.5);
+}
+```
