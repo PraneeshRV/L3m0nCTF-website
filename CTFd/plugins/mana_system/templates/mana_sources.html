@@ -1,0 +1,81 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>⚡ Mana Sources</h1>
+        <p class="lead">View mana usage across all teams/users with active instances.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card" style="background: var(--card-bg, #1a1a2e); border: 1px solid rgba(163, 230, 53, 0.2);">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: rgba(163, 230, 53, 0.1); border-bottom: 1px solid rgba(163, 230, 53, 0.2);">
+            <h5 class="mb-0" style="color: #a3e635;">
+                <i class="fas fa-users"></i> 
+                {% if is_teams_mode %}Teams{% else %}Users{% endif %} with Active Instances
+            </h5>
+            <a href="/admin/mana_settings" class="btn btn-sm btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Back to Settings
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if sources|length > 0 %}
+            <table class="table table-dark table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ 'Team' if is_teams_mode else 'User' }}</th>
+                        <th>Mana Used</th>
+                        <th>Mana Remaining</th>
+                        <th>Max Mana</th>
+                        <th>Active Instances</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for source in sources %}
+                    {% set percentage = (source.mana_used / source.max_mana * 100) if source.max_mana > 0 else 0 %}
+                    <tr>
+                        <td>
+                            <strong>{{ source.name }}</strong>
+                            <br><small class="text-muted">ID: {{ source.source_id }}</small>
+                        </td>
+                        <td>
+                            <span style="color: #f59e0b; font-weight: 600;">{{ source.mana_used }}</span>
+                        </td>
+                        <td>
+                            <span style="color: #a3e635; font-weight: 600;">{{ source.mana_remaining }}</span>
+                        </td>
+                        <td>{{ source.max_mana }}</td>
+                        <td>
+                            <span class="badge" style="background: #3b82f6; padding: 5px 10px;">
+                                {{ source.instance_count }} running
+                            </span>
+                        </td>
+                        <td style="width: 200px;">
+                            <div class="progress" style="height: 20px; background: rgba(0,0,0,0.3);">
+                                <div class="progress-bar 
+                                    {% if percentage > 75 %}bg-danger{% elif percentage > 50 %}bg-warning{% else %}bg-success{% endif %}"
+                                    role="progressbar" 
+                                    style="width: {{ percentage }}%"
+                                    aria-valuenow="{{ percentage }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                    {{ percentage|round|int }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-server fa-3x text-muted mb-3"></i>
+                <h4>No Active Instances</h4>
+                <p class="text-muted">No teams or users currently have active container instances.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

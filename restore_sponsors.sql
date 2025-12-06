@@ -1,0 +1,200 @@
+UPDATE pages SET content = '<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.sponsor-section {
+    font-family: ''Inter'', sans-serif;
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: rgba(204, 255, 0, 0.1);
+    border: 1px solid rgba(204, 255, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.section-badge i { color: #ccff00; }
+.section-badge span {
+    color: #ccff00;
+    font-family: ''JetBrains Mono'', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.section-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 20px 0;
+    text-shadow: 0 0 40px rgba(204, 255, 0, 0.3);
+}
+
+.section-title span {
+    background: linear-gradient(90deg, #ccff00, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-subtitle {
+    color: #e5e5e5;
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+}
+
+.sponsor-card {
+    background: rgba(20, 20, 25, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 32px 28px;
+    border-radius: 24px;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.sponsor-card:hover {
+    border-color: rgba(204, 255, 0, 0.4);
+    transform: translateY(-8px);
+    box-shadow: 0 25px 60px rgba(204, 255, 0, 0.12);
+}
+
+.logo-container {
+    width: 100%;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.logo-container.dark-bg {
+    background: #1a1a2e;
+}
+
+.logo-container img {
+    max-width: 100%;
+    max-height: 90px;
+    object-fit: contain;
+}
+
+.sponsor-card h4 {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sponsor-card h4 i { font-size: 1.1rem; }
+
+.sponsor-card p {
+    color: #e5e5e5;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+}
+</style>
+
+<div class="sponsor-section">
+    <div class="section-header">
+        <div class="section-badge">
+            <i class="fas fa-star"></i>
+            <span>Thank You</span>
+        </div>
+        <h1 class="section-title">Our <span>Sponsors</span></h1>
+        <p class="section-subtitle">
+            A huge thank you to all the incredible organizations that made this event possible. Their support drives the future of cybersecurity.
+        </p>
+    </div>
+
+    <div class="sponsors-grid">
+        
+        <div class="sponsor-card">
+            <div class="logo-container dark-bg">
+                <img src="/files/9a148b1690ec172f5d7336a21640872c/ASVerticalWhiteOutlineLogo.png" alt="Altered Security">
+            </div>
+            <h4>Altered Security <i class="fas fa-shield-alt" style="color: #ef4444;"></i></h4>
+            <p>An industry leader in offensive security training and certification programs. They specialize in hands-on red teaming, exploit development, and adversary simulation for professionals.</p>
+        </div>
+
+        <div class="sponsor-card">
+            <div class="logo-container">
+                <img src="/files/51a88b5b77f2d5629a6e4e140b7ae731/apisec-logo.png" alt="APISEC University">
+            </div>
+            <h4>APISEC University <i class="fas fa-code" style="color: #3b82f6;"></i></h4>
+            <p>A dedicated platform for API security education, offering structured training on secure API design, testing, and defense. Their courses help learners understand and secure modern API ecosystems.</p>
+        </div>
+
+        <div class="sponsor-card">
+            <div class="logo-container">
+                <img src="/files/d23dbf98d11a38d0341f402cea84247a/logo_name.png" alt="Caido">
+            </div>
+            <h4>Caido <i class="fas fa-bug" style="color: #a855f7;"></i></h4>
+            <p>A lightweight web security auditing toolkit designed for efficient application testing. It helps security professionals and researchers analyze and identify issues in web applications with modern workflows.</p>
+        </div>
+
+        <div class="sponsor-card">
+            <div class="logo-container">
+                <img src="/files/88cd15557b6b2818b44911ea92e6ce4b/LetsDefend_NowPartOfHTB_FINAL-solid-color_NoWhiteSpace.png" alt="LetsDefend">
+            </div>
+            <h4>LetsDefend <i class="fas fa-user-shield" style="color: #22c55e;"></i></h4>
+            <p>A practical cyber security training platform focused on blue team skills and SOC operations. It offers SOC simulations, incident response labs, and real-world defensive scenarios for learners.</p>
+        </div>
+
+        <div class="sponsor-card">
+            <div class="logo-container">
+                <img src="/files/598c6b65b67db7751b17c46e994dc875/seclance.png" alt="Seclance">
+            </div>
+            <h4>Seclance <i class="fas fa-certificate" style="color: #eab308;"></i></h4>
+            <p>A cyber security company providing consulting, training, and certification programs. Known for expert-led courses and high success rates, they help professionals upskill in key security domains.</p>
+        </div>
+
+        <div class="sponsor-card">
+            <div class="logo-container">
+                <img src="/files/3e9cd52cd53aac70df8a96bbb17d3819/TrainSec_Main_dark2x.png" alt="TrainSec">
+            </div>
+            <h4>TrainSec <i class="fas fa-graduation-cap" style="color: #06b6d4;"></i></h4>
+            <p>A security training academy offering in-depth courses on malware analysis, Windows internals, and advanced defensive concepts. They focus on developing strong technical expertise through practical learning.</p>
+        </div>
+
+        <div class="sponsor-card">
+            <div class="logo-container">
+                <img src="/files/35f10fa7fc84e3cf2922aeb440dae8f2/xyz-logo-color.png" alt="XYZ">
+            </div>
+            <h4>XYZ <i class="fas fa-globe" style="color: #f97316;"></i></h4>
+            <p>A global provider of domain and digital identity solutions. They power online presence for businesses, creators, and startups through flexible domain naming and infrastructure.</p>
+        </div>
+
+    </div>
+</div>
+' WHERE route = 'sponsors';

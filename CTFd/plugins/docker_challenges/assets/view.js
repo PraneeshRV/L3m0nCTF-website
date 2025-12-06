@@ -582,13 +582,18 @@ function resetToNormalState(container, manaInfo) {
     // Get mana cost from challenge data (default 25 if not set)
     const manaCost = CTFd._internal.challenge.data.mana_cost || 25;
 
+    // Check if mana system is enabled (default to true for backward compatibility)
+    const manaEnabled = manaInfo && manaInfo.enabled !== false;
+
     // Get current mana from API response or use defaults
-    const currentMana = manaInfo ? manaInfo.current : 100;
-    const maxMana = manaInfo ? manaInfo.max : 100;
+    const currentMana = manaInfo && manaInfo.current !== undefined ? manaInfo.current : 100;
+    const maxMana = manaInfo && manaInfo.max !== undefined ? manaInfo.max : 100;
     const manaPercent = Math.round((currentMana / maxMana) * 100);
 
-    // Determine if user can afford this challenge
-    const canAfford = currentMana >= manaCost;
+    // Determine if user can afford this challenge (always true if mana disabled)
+    const canAfford = !manaEnabled || currentMana >= manaCost;
+
+    // Style for launch button
     const launchButtonStyle = canAfford
         ? `background: linear-gradient(135deg, #3f6212 0%, #4d7c0f 50%, #65a30d 100%);
            border: 1px solid rgba(163, 230, 53, 0.3);
@@ -598,10 +603,8 @@ function resetToNormalState(container, manaInfo) {
            cursor: not-allowed;
            opacity: 0.7;`;
 
-    // Reset the UI to show the normal launch button with mana bar
-    const dockerContainer = CTFd.lib.$('#docker_container');
-    const originalHTML = `
-        <div style="text-align: center; padding: 20px 0;">
+    // Mana bar HTML (only shown when mana is enabled)
+    const manaBarHTML = manaEnabled ? `
             <!-- Mana Bar -->
             <div class="mana-bar-container" style="
                 background: rgba(10, 10, 10, 0.8);
@@ -629,11 +632,30 @@ function resetToNormalState(container, manaInfo) {
                         border-radius: 6px;"></div>
                 </div>
             </div>
-            
+    ` : '';
+
+    // Button text (show cost only when mana is enabled)
+    const buttonText = manaEnabled ? `Launch (${manaCost} ⚡)` : 'Launch Instance';
+
+    // Button onclick handler
+    const buttonOnClick = canAfford
+        ? `start_container('${container}');`
+        : `alert('Insufficient mana! You need ${manaCost} but only have ${currentMana}. Stop an existing instance to reclaim mana.');`;
+
+    // Insufficient mana warning (only when mana is enabled and can't afford)
+    const insufficientManaWarning = (manaEnabled && !canAfford)
+        ? `<div style="color: #f87171; font-size: 12px; margin-top: 8px;">Insufficient mana! Stop an instance to reclaim.</div>`
+        : '';
+
+    // Reset the UI to show the normal launch button with optional mana bar
+    const dockerContainer = CTFd.lib.$('#docker_container');
+    const originalHTML = `
+        <div style="text-align: center; padding: 20px 0;">
+            ${manaBarHTML}
             <div class="description" style="color: #9ca3af; font-size: 13px; margin-bottom: 20px;">Deploy your challenge instance</div>
             <div class="docker-control-panel">
                 <div class="docker-launch-section">
-                    <button onclick="${canAfford ? `start_container('${container}');` : `alert('Insufficient mana! You need ${manaCost} but only have ${currentMana}. Stop an existing instance to reclaim mana.');`}" style="
+                    <button onclick="${buttonOnClick}" style="
                         ${launchButtonStyle}
                         border-radius: 12px;
                         color: #ffffff;
@@ -650,9 +672,9 @@ function resetToNormalState(container, manaInfo) {
                         text-transform: uppercase;
                         letter-spacing: 0.5px;">
                         <i class="fas fa-rocket" style="font-size: 14px;"></i>
-                        Launch (${manaCost} ⚡)
+                        ${buttonText}
                     </button>
-                    ${!canAfford ? `<div style="color: #f87171; font-size: 12px; margin-top: 8px;">Insufficient mana! Stop an instance to reclaim.</div>` : ''}
+                    ${insufficientManaWarning}
                 </div>
             </div>
         </div>

@@ -1,0 +1,199 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>⚡ Mana System Settings</h1>
+        <p class="lead">Configure the resource management system for Docker challenges.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4" style="background: var(--card-bg, #1a1a2e); border: 1px solid rgba(163, 230, 53, 0.2);">
+                <div class="card-header" style="background: rgba(163, 230, 53, 0.1); border-bottom: 1px solid rgba(163, 230, 53, 0.2);">
+                    <h4 class="mb-0" style="color: #a3e635;">
+                        <i class="fas fa-cog"></i> Configuration
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="mana-settings-form">
+                        <!-- Enable/Disable Toggle -->
+                        <div class="form-group mb-4">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="enabled" name="enabled" {% if settings.enabled %}checked{% endif %}>
+                                <label class="custom-control-label" for="enabled" style="font-size: 18px; font-weight: 600;">
+                                    Enable Mana System
+                                </label>
+                            </div>
+                            <small class="form-text text-muted mt-2">
+                                When enabled, teams/users must have enough mana to launch Docker challenge instances.
+                                <strong>Mana is now calculated from active containers</strong> - no more desync bugs!
+                            </small>
+                        </div>
+
+                        <hr style="border-color: rgba(163, 230, 53, 0.2);">
+
+                        <!-- Default Mana -->
+                        <div class="form-group mb-4">
+                            <label for="default_mana" style="font-weight: 600;">
+                                <i class="fas fa-battery-full" style="color: #a3e635;"></i>
+                                Default Mana Pool
+                            </label>
+                            <input type="number" class="form-control" id="default_mana" name="default_mana" 
+                                   value="{{ settings.default_mana }}" min="1" max="1000"
+                                   style="background: rgba(0,0,0,0.3); border: 1px solid rgba(163, 230, 53, 0.3); max-width: 200px;">
+                            <small class="form-text text-muted">
+                                Maximum mana each team/user starts with (default: 100).
+                            </small>
+                        </div>
+
+                        <!-- Default Cost -->
+                        <div class="form-group mb-4">
+                            <label for="default_cost" style="font-weight: 600;">
+                                <i class="fas fa-bolt" style="color: #f59e0b;"></i>
+                                Default Mana Cost per Challenge
+                            </label>
+                            <input type="number" class="form-control" id="default_cost" name="default_cost" 
+                                   value="{{ settings.default_cost }}" min="1" max="100"
+                                   style="background: rgba(0,0,0,0.3); border: 1px solid rgba(163, 230, 53, 0.3); max-width: 200px;">
+                            <small class="form-text text-muted">
+                                Mana cost to launch a challenge instance (default: 25). Can be overridden per challenge.
+                            </small>
+                        </div>
+
+                        <hr style="border-color: rgba(163, 230, 53, 0.2);">
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-success" style="background: linear-gradient(135deg, #3f6212, #65a30d); border: none;">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                            <button type="button" class="btn btn-warning" id="reset-all-btn" style="background: #f59e0b; border: none;">
+                                <i class="fas fa-sync"></i> Reset All Max Mana
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Stats Card -->
+            <div class="card mb-4" style="background: var(--card-bg, #1a1a2e); border: 1px solid rgba(163, 230, 53, 0.2);">
+                <div class="card-header" style="background: rgba(163, 230, 53, 0.1); border-bottom: 1px solid rgba(163, 230, 53, 0.2);">
+                    <h5 class="mb-0" style="color: #a3e635;">
+                        <i class="fas fa-chart-bar"></i> Live Stats
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="stat-item mb-3">
+                        <div class="stat-label text-muted">Active Instances</div>
+                        <div class="stat-value" style="font-size: 24px; color: #60a5fa;">{{ total_active_instances }}</div>
+                    </div>
+                    <div class="stat-item mb-3">
+                        <div class="stat-label text-muted">Total Mana Used</div>
+                        <div class="stat-value" style="font-size: 24px; color: #f59e0b;">{{ total_mana_used }}</div>
+                    </div>
+                    <div class="stat-item mb-3">
+                        <div class="stat-label text-muted">Sources with Mana</div>
+                        <div class="stat-value" style="font-size: 24px; color: #a3e635;">{{ total_sources }}</div>
+                    </div>
+                    <div class="stat-item mb-3">
+                        <div class="stat-label text-muted">System Status</div>
+                        <div class="stat-value">
+                            {% if settings.enabled %}
+                            <span class="badge badge-success" style="background: #10b981; padding: 8px 12px;">
+                                <i class="fas fa-check-circle"></i> ENABLED
+                            </span>
+                            {% else %}
+                            <span class="badge badge-secondary" style="background: #6b7280; padding: 8px 12px;">
+                                <i class="fas fa-times-circle"></i> DISABLED
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr style="border-color: rgba(255,255,255,0.1);">
+                    <a href="/admin/mana_sources" class="btn btn-outline-info btn-block" style="border-color: #60a5fa; color: #60a5fa;">
+                        <i class="fas fa-users"></i> View All Sources
+                    </a>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card" style="background: var(--card-bg, #1a1a2e); border: 1px solid rgba(59, 130, 246, 0.2);">
+                <div class="card-header" style="background: rgba(59, 130, 246, 0.1); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
+                    <h5 class="mb-0" style="color: #60a5fa;">
+                        <i class="fas fa-info-circle"></i> How It Works
+                    </h5>
+                </div>
+                <div class="card-body" style="font-size: 13px;">
+                    <ul class="mb-0" style="padding-left: 20px;">
+                        <li class="mb-2">Each team/user has a mana pool</li>
+                        <li class="mb-2">Launching a container uses mana</li>
+                        <li class="mb-2">Mana is calculated from active containers</li>
+                        <li class="mb-2">Stopping containers frees up mana</li>
+                        <li class="mb-2">No mana desync - always accurate!</li>
+                        <li>Per-challenge costs can be set individually</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle form submission
+    document.getElementById('mana-settings-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('/admin/mana_settings', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Settings saved successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error saving settings: ' + error);
+        });
+    });
+
+    // Handle reset all mana
+    document.getElementById('reset-all-btn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset ALL team/user max mana to the default value? This cannot be undone.')) {
+            const formData = new FormData(document.getElementById('mana-settings-form'));
+            formData.set('reset_all', 'true');
+            
+            fetch('/admin/mana_settings', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('All max mana has been reset!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error resetting mana: ' + error);
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@ services:
     user: root
     restart: always
     ports:
-      - "8003:8000"
+      - "127.0.0.1:8005:8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
@@ -46,9 +46,11 @@ services:
       - MARIADB_DATABASE=ctfd
       - MARIADB_AUTO_UPGRADE=1
     volumes:
-      - .data/mysql:/var/lib/mysql
+      - db_data:/var/lib/mysql
     networks:
       internal: # Enhanced durability settings for crash safety
+    security_opt:
+      - apparmor:unconfined
     command: [ mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0, --innodb_flush_log_at_trx_commit=1, --innodb_flush_method=O_DIRECT, --sync_binlog=1 ]
     # Health check to ensure DB is ready
     healthcheck:
@@ -65,9 +67,14 @@ services:
       - .data/redis:/data
     networks:
       internal: # Enable AOF persistence for better durability + RDB snapshots
+    security_opt:
+      - apparmor:unconfined
     command: redis-server --appendonly yes --appendfsync everysec --save 60 1 --save 300 10
 
 networks:
   default:
   internal:
     internal: true
+
+volumes:
+  db_data:

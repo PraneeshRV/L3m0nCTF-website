@@ -6,9 +6,15 @@ from flask import Blueprint, render_template, request
 from .db_utils import DBUtils
 
 notifier_bp = Blueprint("notifier", __name__, template_folder="templates")
+_routes_registered = False
 
 
 def load_bp(plugin_route):
+    global _routes_registered
+    if _routes_registered:
+        return notifier_bp
+    _routes_registered = True
+    
     @notifier_bp.route(plugin_route, methods=["GET"])
     @admins_only
     def get_config():

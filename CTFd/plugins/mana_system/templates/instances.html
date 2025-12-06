@@ -1,0 +1,513 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .mana-container {
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 22, 35, 0.95));
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(163, 230, 53, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .mana-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    
+    .mana-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #a3e635;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .mana-bar-container {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 12px;
+        height: 40px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(163, 230, 53, 0.3);
+    }
+    
+    .mana-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3f6212, #65a30d, #84cc16);
+        border-radius: 12px;
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+    }
+    
+    .mana-bar.low {
+        background: linear-gradient(90deg, #b91c1c, #dc2626, #ef4444);
+    }
+    
+    .mana-bar.medium {
+        background: linear-gradient(90deg, #b45309, #d97706, #f59e0b);
+    }
+    
+    .mana-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 50%;
+        margin-top: -10px;
+    }
+    
+    .mana-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 15px;
+    }
+    
+    .mana-stat {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .mana-stat-label {
+        font-size: 12px;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .mana-stat-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #e5e7eb;
+    }
+    
+    .instances-container {
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 22, 35, 0.95));
+        border-radius: 16px;
+        border: 1px solid rgba(163, 230, 53, 0.2);
+        overflow: hidden;
+    }
+    
+    .instances-header {
+        background: rgba(163, 230, 53, 0.1);
+        padding: 20px 25px;
+        border-bottom: 1px solid rgba(163, 230, 53, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .instances-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #a3e635;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .instance-count {
+        background: rgba(163, 230, 53, 0.2);
+        color: #a3e635;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .instances-table {
+        width: 100%;
+    }
+    
+    .instances-table th {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px 20px;
+        text-align: left;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #9ca3af;
+        font-weight: 600;
+    }
+    
+    .instances-table td {
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: #e5e7eb;
+    }
+    
+    .instances-table tr:hover {
+        background: rgba(163, 230, 53, 0.05);
+    }
+    
+    .challenge-name {
+        font-weight: 600;
+        color: #f0fdf4;
+        font-size: 15px;
+    }
+    
+    .challenge-category {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 3px;
+    }
+    
+    .connection-info {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .connection-info .copy-btn {
+        cursor: pointer;
+        color: #9ca3af;
+        transition: color 0.2s;
+    }
+    
+    .connection-info .copy-btn:hover {
+        color: #60a5fa;
+    }
+    
+    .mana-cost-badge {
+        background: linear-gradient(135deg, #3f6212, #65a30d);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .time-remaining {
+        color: #f59e0b;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    
+    .time-remaining.expired {
+        color: #ef4444;
+    }
+    
+    .stop-btn {
+        background: linear-gradient(135deg, #b91c1c, #dc2626);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .stop-btn:hover {
+        background: linear-gradient(135deg, #991b1b, #b91c1c);
+        transform: translateY(-1px);
+    }
+    
+    .stop-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        color: #4b5563;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        font-size: 20px;
+        color: #e5e7eb;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        font-size: 14px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .stack-badge {
+        background: rgba(139, 92, 246, 0.2);
+        color: #a78bfa;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-left: 8px;
+    }
+    
+    @media (max-width: 768px) {
+        .mana-container, .instances-container {
+            border-radius: 12px;
+        }
+        
+        .mana-stats {
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .instances-table th, .instances-table td {
+            padding: 12px 10px;
+            font-size: 13px;
+        }
+        
+        .connection-info {
+            font-size: 11px;
+        }
+    }
+</style>
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>⚡ My Instances</h1>
+        <p class="lead">Manage your active challenge instances and mana resources.</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Mana Status Card -->
+    <div class="mana-container">
+        <div class="mana-header">
+            <div class="mana-title">
+                <i class="fas fa-bolt"></i>
+                Mana Status
+            </div>
+            {% if not mana_info.enabled %}
+            <span style="color: #9ca3af;">Mana system is disabled</span>
+            {% endif %}
+        </div>
+        
+        {% if mana_info.enabled %}
+        {% set percentage = (mana_info.current / mana_info.max * 100) if mana_info.max > 0 else 100 %}
+        {% set bar_class = 'low' if percentage < 25 else ('medium' if percentage < 50 else '') %}
+        
+        <div class="mana-bar-container">
+            <div class="mana-bar {{ bar_class }}" style="width: {{ percentage }}%"></div>
+            <span class="mana-text">{{ mana_info.current }} / {{ mana_info.max }} Mana</span>
+        </div>
+        
+        <div class="mana-stats">
+            <div class="mana-stat">
+                <span class="mana-stat-label">Available</span>
+                <span class="mana-stat-value" style="color: #a3e635;">{{ mana_info.current }}</span>
+            </div>
+            <div class="mana-stat">
+                <span class="mana-stat-label">In Use</span>
+                <span class="mana-stat-value" style="color: #f59e0b;">{{ mana_info.used }}</span>
+            </div>
+            <div class="mana-stat">
+                <span class="mana-stat-label">Maximum</span>
+                <span class="mana-stat-value">{{ mana_info.max }}</span>
+            </div>
+            <div class="mana-stat">
+                <span class="mana-stat-label">Cost per Challenge</span>
+                <span class="mana-stat-value">{{ default_cost }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Active Instances Table -->
+    <div class="instances-container">
+        <div class="instances-header">
+            <div class="instances-title">
+                <i class="fas fa-server"></i>
+                Active Instances
+            </div>
+            <span class="instance-count">{{ instances|length }} running</span>
+        </div>
+        
+        {% if instances|length > 0 %}
+        <table class="instances-table">
+            <thead>
+                <tr>
+                    <th>Challenge</th>
+                    <th>Connection</th>
+                    <th>Mana Cost</th>
+                    <th>Time Remaining</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instance in instances %}
+                <tr data-instance-id="{{ instance.instance_id }}">
+                    <td>
+                        <div class="challenge-name">
+                            {{ instance.challenge_name }}
+                            {% if instance.is_stack and instance.stack_count > 1 %}
+                            <span class="stack-badge">{{ instance.stack_count }} containers</span>
+                            {% endif %}
+                        </div>
+                        <div class="challenge-category">{{ instance.challenge_category }}</div>
+                    </td>
+                    <td>
+                        {% if instance.connection_info %}
+                        <div class="connection-info">
+                            <span class="conn-text">{{ instance.connection_info }}</span>
+                            <i class="fas fa-copy copy-btn" onclick="copyConnection(this)" title="Copy to clipboard"></i>
+                        </div>
+                        {% else %}
+                        <span style="color: #6b7280;">No connection info</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="mana-cost-badge">
+                            <i class="fas fa-bolt"></i>
+                            {{ instance.total_mana_cost }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if instance.time_remaining %}
+                        <span class="time-remaining {{ 'expired' if instance.time_remaining == 'Expired' else '' }}">
+                            <i class="fas fa-clock"></i>
+                            {{ instance.time_remaining }}
+                        </span>
+                        {% else %}
+                        <span style="color: #6b7280;">No timeout</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="stop-btn" onclick="stopInstance('{{ instance.instance_id }}', {{ instance.total_mana_cost }})">
+                            <i class="fas fa-stop"></i>
+                            Stop
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-server"></i>
+            <h3>No Active Instances</h3>
+            <p>You don't have any running challenge instances. Go to the Challenges page to launch one!</p>
+            <a href="/challenges" class="btn btn-primary mt-4" style="background: linear-gradient(135deg, #3f6212, #65a30d); border: none;">
+                <i class="fas fa-flag"></i> Browse Challenges
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function copyConnection(btn) {
+    const text = btn.previousElementSibling.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+        const originalClass = btn.className;
+        btn.className = 'fas fa-check copy-btn';
+        btn.style.color = '#10b981';
+        setTimeout(() => {
+            btn.className = originalClass;
+            btn.style.color = '';
+        }, 1500);
+    });
+}
+
+function stopInstance(instanceId, manaCost) {
+    if (!confirm(`Stop this instance? You will reclaim ${manaCost} mana.`)) {
+        return;
+    }
+    
+    const btn = document.querySelector(`tr[data-instance-id="${instanceId}"] .stop-btn`);
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Stopping...';
+    
+    // Call the Docker challenges API to stop the container
+    fetch('/api/v1/container', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            instance_id: instanceId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the row with animation
+            const row = document.querySelector(`tr[data-instance-id="${instanceId}"]`);
+            row.style.transition = 'opacity 0.3s, transform 0.3s';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                row.remove();
+                // Update instance count
+                const countEl = document.querySelector('.instance-count');
+                const currentCount = parseInt(countEl.textContent);
+                countEl.textContent = (currentCount - 1) + ' running';
+                
+                // Reload page to update mana bar
+                location.reload();
+            }, 300);
+        } else {
+            alert('Error stopping instance: ' + (data.message || 'Unknown error'));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-stop"></i> Stop';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error stopping instance. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-stop"></i> Stop';
+    });
+}
+
+// Auto-refresh time remaining
+setInterval(() => {
+    document.querySelectorAll('.time-remaining').forEach(el => {
+        const text = el.textContent.trim();
+        if (text && text !== 'Expired') {
+            const match = text.match(/(\d+)m (\d+)s/);
+            if (match) {
+                let mins = parseInt(match[1]);
+                let secs = parseInt(match[2]);
+                
+                secs--;
+                if (secs < 0) {
+                    secs = 59;
+                    mins--;
+                }
+                
+                if (mins < 0) {
+                    el.textContent = 'Expired';
+                    el.classList.add('expired');
+                } else {
+                    el.innerHTML = `<i class="fas fa-clock"></i> ${mins}m ${secs}s`;
+                }
+            }
+        }
+    });
+}, 1000);
+</script>
+{% endblock %}
