@@ -605,7 +605,7 @@ function resetToNormalState(container, manaInfo) {
 
     // Mana bar HTML (only shown when mana is enabled)
     const manaBarHTML = manaEnabled ? `
-            <!-- Mana Bar -->
+            <!-- Juice Bar -->
             <div class="mana-bar-container" style="
                 background: rgba(10, 10, 10, 0.8);
                 border: 1px solid rgba(163, 230, 53, 0.25);
@@ -615,9 +615,9 @@ function resetToNormalState(container, manaInfo) {
                 display: inline-block;
                 min-width: 200px;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
-                    <span style="font-size: 18px;">⚡</span>
+                    <span style="font-size: 18px;">🍋</span>
                     <span style="color: #a3e635; font-weight: 600; font-size: 16px;">${currentMana} / ${maxMana}</span>
-                    <span style="color: #9ca3af; font-size: 12px;">MANA</span>
+                    <span style="color: #9ca3af; font-size: 12px;">JUICE</span>
                 </div>
                 <div style="
                     background: rgba(0, 0, 0, 0.5);
@@ -635,16 +635,16 @@ function resetToNormalState(container, manaInfo) {
     ` : '';
 
     // Button text (show cost only when mana is enabled)
-    const buttonText = manaEnabled ? `Launch (${manaCost} ⚡)` : 'Launch Instance';
+    const buttonText = manaEnabled ? `Launch (${manaCost} 🍋)` : 'Launch Instance';
 
     // Button onclick handler
     const buttonOnClick = canAfford
         ? `start_container('${container}');`
-        : `alert('Insufficient mana! You need ${manaCost} but only have ${currentMana}. Stop an existing instance to reclaim mana.');`;
+        : `alert('Insufficient juice! You need ${manaCost} ml but only have ${currentMana} ml. Stop an existing instance to recover juice.');`;
 
     // Insufficient mana warning (only when mana is enabled and can't afford)
     const insufficientManaWarning = (manaEnabled && !canAfford)
-        ? `<div style="color: #f87171; font-size: 12px; margin-top: 8px;">Insufficient mana! Stop an instance to reclaim.</div>`
+        ? `<div style="color: #f87171; font-size: 12px; margin-top: 8px;">Insufficient juice! Stop an instance to recover.</div>`
         : '';
 
     // Reset the UI to show the normal launch button with optional mana bar
@@ -720,31 +720,42 @@ document.addEventListener('visibilitychange', function () {
 function updateWarningModal({
     title, warningText, buttonText, onClose } = {}) {
 
-    // Determine modal colors based on title
-    let headerColor = '#10b981';
-    let titleColor = '#ffffff';
+    // Determine modal colors based on title - using dark theme with lemon accents
+    let headerBg = 'linear-gradient(135deg, #3f6212 0%, #65a30d 100%)';
+    let headerBorder = 'rgba(163, 230, 53, 0.3)';
+    let buttonBg = 'linear-gradient(135deg, #3f6212 0%, #65a30d 100%)';
+    let buttonBorder = 'rgba(163, 230, 53, 0.3)';
+    let iconClass = 'fas fa-check-circle';
 
-    if (title.toLowerCase().includes('error')) {
-        headerColor = '#dc2626'; // Red for errors
-    } else if (title.toLowerCase().includes('success') || title.toLowerCase().includes('started')) {
-        headerColor = '#10b981'; // Green for success
-    } else if (title.toLowerCase().includes('attention')) {
-        headerColor = '#f59e0b'; // Orange for warnings
-        titleColor = '#1f2937'; // Dark text for better contrast on orange
+    if (title.toLowerCase().includes('error') || title.toLowerCase().includes('failed')) {
+        headerBg = 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)';
+        headerBorder = 'rgba(248, 113, 113, 0.3)';
+        buttonBg = 'linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%)';
+        buttonBorder = 'rgba(248, 113, 113, 0.3)';
+        iconClass = 'fas fa-exclamation-circle';
+    } else if (title.toLowerCase().includes('attention') || title.toLowerCase().includes('warning')) {
+        headerBg = 'linear-gradient(135deg, #78350f 0%, #92400e 50%, #b45309 100%)';
+        headerBorder = 'rgba(251, 191, 36, 0.3)';
+        buttonBg = 'linear-gradient(135deg, #92400e 0%, #b45309 100%)';
+        buttonBorder = 'rgba(251, 191, 36, 0.3)';
+        iconClass = 'fas fa-exclamation-triangle';
     }
 
     const modalHTML = `
-        <div id="warningModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background-color:rgba(0,0,0,0.6);">
-          <div style="position:relative; margin:8% auto; width:420px; max-width:90%; background:var(--card-bg, #ffffff); border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.3); overflow:hidden; color:var(--text-primary, #212529); border: 1px solid var(--border-color, #dee2e6);">
-            <div class="modal-header" style="padding:1.25rem; display:flex; justify-content:space-between; align-items:center; background:${headerColor}; color:${titleColor};">
-              <h5 class="modal-title" style="margin:0; color:inherit; font-size:16px; font-weight:600;">${title}</h5>
-              <button type="button" id="warningCloseBtn" style="border:none; background:none; font-size:1.5rem; line-height:1; cursor:pointer; color:inherit; opacity:0.8; padding:0; width:24px; height:24px; border-radius:4px; transition:opacity 0.2s ease;">&times;</button>
+        <div id="warningModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background-color:rgba(0,0,0,0.8); backdrop-filter: blur(4px);">
+          <div style="position:relative; margin:8% auto; width:440px; max-width:90%; background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%); border-radius:16px; box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(0,0,0,0.4); overflow:hidden; border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header" style="padding: 20px 24px; display:flex; justify-content:space-between; align-items:center; background: ${headerBg}; border-bottom: 1px solid ${headerBorder};">
+              <h5 class="modal-title" style="margin:0; color: #ffffff; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="${iconClass}"></i>
+                ${title}
+              </h5>
+              <button type="button" id="warningCloseBtn" style="border:none; background: rgba(0,0,0,0.2); font-size: 18px; line-height:1; cursor:pointer; color: #ffffff; opacity: 0.9; padding: 0; width: 28px; height: 28px; border-radius: 6px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;">&times;</button>
             </div>
-            <div class="modal-body" style="padding:1.25rem; color:var(--text-primary, #212529); line-height:1.5; font-size:14px;">
+            <div class="modal-body" style="padding: 24px; color: #e5e7eb; line-height: 1.6; font-size: 14px; background: #0a0a0a;">
               ${warningText}
             </div>
-            <div class="modal-footer" style="padding:1rem 1.25rem; text-align:right; border-top:1px solid var(--border-color, #dee2e6); background:var(--card-bg, #ffffff);">
-              <button type="button" class="btn btn-primary" id="warningOkBtn" style="background:${headerColor}; border-color:${headerColor}; padding:8px 16px; border-radius:4px; font-size:13px; font-weight:500;">${buttonText}</button>
+            <div class="modal-footer" style="padding: 16px 24px; text-align: right; border-top: 1px solid rgba(255,255,255,0.08); background: #0a0a0a;">
+              <button type="button" class="btn btn-primary" id="warningOkBtn" style="background: ${buttonBg}; border: 1px solid ${buttonBorder}; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${buttonText}</button>
             </div>
           </div>
         </div>

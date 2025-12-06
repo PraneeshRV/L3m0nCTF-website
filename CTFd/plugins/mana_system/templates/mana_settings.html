@@ -2,8 +2,8 @@
 {% block content %}
 <div class="jumbotron">
     <div class="container">
-        <h1>⚡ Mana System Settings</h1>
-        <p class="lead">Configure the resource management system for Docker challenges.</p>
+        <h1>🍋 Juice System Settings</h1>
+        <p class="lead">Configure the lemonade resource management system for Docker challenges.</p>
     </div>
 </div>
 
@@ -23,42 +23,40 @@
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="enabled" name="enabled" {% if settings.enabled %}checked{% endif %}>
                                 <label class="custom-control-label" for="enabled" style="font-size: 18px; font-weight: 600;">
-                                    Enable Mana System
+                                    🧃 Enable Juice System
                                 </label>
                             </div>
                             <small class="form-text text-muted mt-2">
-                                When enabled, teams/users must have enough mana to launch Docker challenge instances.
-                                <strong>Mana is now calculated from active containers</strong> - no more desync bugs!
+                                When enabled, teams/users must have enough juice to launch Docker challenge instances.
+                                <strong>Juice is calculated from active containers</strong> - no desync bugs!
                             </small>
                         </div>
 
                         <hr style="border-color: rgba(163, 230, 53, 0.2);">
 
-                        <!-- Default Mana -->
+                        <!-- Default Juice Tank -->
                         <div class="form-group mb-4">
                             <label for="default_mana" style="font-weight: 600;">
-                                <i class="fas fa-battery-full" style="color: #a3e635;"></i>
-                                Default Mana Pool
+                                🍋 Default Juice Tank Capacity (ml)
                             </label>
                             <input type="number" class="form-control" id="default_mana" name="default_mana" 
                                    value="{{ settings.default_mana }}" min="1" max="1000"
                                    style="background: rgba(0,0,0,0.3); border: 1px solid rgba(163, 230, 53, 0.3); max-width: 200px;">
                             <small class="form-text text-muted">
-                                Maximum mana each team/user starts with (default: 100).
+                                Maximum juice each team/user starts with (default: 100 ml).
                             </small>
                         </div>
 
                         <!-- Default Cost -->
                         <div class="form-group mb-4">
                             <label for="default_cost" style="font-weight: 600;">
-                                <i class="fas fa-bolt" style="color: #f59e0b;"></i>
-                                Default Mana Cost per Challenge
+                                🥤 Default Juice Cost per Challenge (ml)
                             </label>
                             <input type="number" class="form-control" id="default_cost" name="default_cost" 
                                    value="{{ settings.default_cost }}" min="1" max="100"
                                    style="background: rgba(0,0,0,0.3); border: 1px solid rgba(163, 230, 53, 0.3); max-width: 200px;">
                             <small class="form-text text-muted">
-                                Mana cost to launch a challenge instance (default: 25). Can be overridden per challenge.
+                                Juice cost to launch a challenge instance (default: 25 ml). Can be overridden per challenge.
                             </small>
                         </div>
 
@@ -70,7 +68,7 @@
                                 <i class="fas fa-save"></i> Save Settings
                             </button>
                             <button type="button" class="btn btn-warning" id="reset-all-btn" style="background: #f59e0b; border: none;">
-                                <i class="fas fa-sync"></i> Reset All Max Mana
+                                <i class="fas fa-sync"></i> Refill All Tanks
                             </button>
                         </div>
                     </form>
@@ -92,11 +90,11 @@
                         <div class="stat-value" style="font-size: 24px; color: #60a5fa;">{{ total_active_instances }}</div>
                     </div>
                     <div class="stat-item mb-3">
-                        <div class="stat-label text-muted">Total Mana Used</div>
-                        <div class="stat-value" style="font-size: 24px; color: #f59e0b;">{{ total_mana_used }}</div>
+                        <div class="stat-label text-muted">Total Juice Used</div>
+                        <div class="stat-value" style="font-size: 24px; color: #f59e0b;">{{ total_mana_used }} ml</div>
                     </div>
                     <div class="stat-item mb-3">
-                        <div class="stat-label text-muted">Sources with Mana</div>
+                        <div class="stat-label text-muted">Teams/Users with Tanks</div>
                         <div class="stat-value" style="font-size: 24px; color: #a3e635;">{{ total_sources }}</div>
                     </div>
                     <div class="stat-item mb-3">
@@ -104,18 +102,18 @@
                         <div class="stat-value">
                             {% if settings.enabled %}
                             <span class="badge badge-success" style="background: #10b981; padding: 8px 12px;">
-                                <i class="fas fa-check-circle"></i> ENABLED
+                                <i class="fas fa-check-circle"></i> FLOWING
                             </span>
                             {% else %}
                             <span class="badge badge-secondary" style="background: #6b7280; padding: 8px 12px;">
-                                <i class="fas fa-times-circle"></i> DISABLED
+                                <i class="fas fa-times-circle"></i> STOPPED
                             </span>
                             {% endif %}
                         </div>
                     </div>
                     <hr style="border-color: rgba(255,255,255,0.1);">
                     <a href="/admin/mana_sources" class="btn btn-outline-info btn-block" style="border-color: #60a5fa; color: #60a5fa;">
-                        <i class="fas fa-users"></i> View All Sources
+                        <i class="fas fa-users"></i> View All Juice Tanks
                     </a>
                 </div>
             </div>
@@ -129,12 +127,12 @@
                 </div>
                 <div class="card-body" style="font-size: 13px;">
                     <ul class="mb-0" style="padding-left: 20px;">
-                        <li class="mb-2">Each team/user has a mana pool</li>
-                        <li class="mb-2">Launching a container uses mana</li>
-                        <li class="mb-2">Mana is calculated from active containers</li>
-                        <li class="mb-2">Stopping containers frees up mana</li>
-                        <li class="mb-2">No mana desync - always accurate!</li>
-                        <li>Per-challenge costs can be set individually</li>
+                        <li class="mb-2">🍋 Each team/user has a juice tank</li>
+                        <li class="mb-2">🚀 Launching a container uses juice</li>
+                        <li class="mb-2">📊 Juice is calculated from active containers</li>
+                        <li class="mb-2">🔄 Stopping containers recovers juice</li>
+                        <li class="mb-2">✓ No desync - always accurate!</li>
+                        <li>⚙️ Per-challenge costs can be customized</li>
                     </ul>
                 </div>
             </div>
@@ -158,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Settings saved successfully!');
+                alert('🍋 Settings saved successfully!');
                 location.reload();
             } else {
                 alert('Error: ' + data.message);
@@ -171,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle reset all mana
     document.getElementById('reset-all-btn').addEventListener('click', function() {
-        if (confirm('Are you sure you want to reset ALL team/user max mana to the default value? This cannot be undone.')) {
+        if (confirm('Are you sure you want to refill ALL team/user juice tanks to the default capacity? This cannot be undone.')) {
             const formData = new FormData(document.getElementById('mana-settings-form'));
             formData.set('reset_all', 'true');
             
@@ -183,14 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('All max mana has been reset!');
+                    alert('🧃 All juice tanks have been refilled!');
                     location.reload();
                 } else {
                     alert('Error: ' + data.message);
                 }
             })
             .catch(error => {
-                alert('Error resetting mana: ' + error);
+                alert('Error refilling tanks: ' + error);
             });
         }
     });

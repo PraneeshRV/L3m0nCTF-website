@@ -84,8 +84,163 @@
         background-color: #0a0a0a !important;
         border: 1px solid rgba(204, 255, 0, 0.2);
         border-radius: 16px;
-        color: #fff;
+        color: #fff !important;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8), 0 0 60px rgba(204, 255, 0, 0.1);
+      }
+      
+      /* Center challenge modal properly */
+      #challenge-window .modal-dialog,
+      .modal.fade .modal-dialog {
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 60px);
+        margin: 30px auto;
+      }
+      
+      #challenge-window .modal-content {
+        width: 100%;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+      }
+      
+      .modal.fade {
+        padding-top: 0 !important;
+      }
+      
+      .modal-dialog-centered {
+        min-height: calc(100vh - 60px);
+      }
+      
+      /* Modal text - ensure all text is white */
+      .modal-content * {
+        color: #fff;
+      }
+      
+      /* === BADGES === */
+      .badge {
+        font-weight: 600;
+        padding: 0.5em 0.8em;
+        border-radius: 6px;
+        letter-spacing: 0.02em;
+      }
+      
+      .badge.bg-primary, .badge-primary, .bg-primary {
+        background: rgba(163, 230, 53, 0.15) !important;
+        color: #d9f99d !important;
+        border: 1px solid rgba(163, 230, 53, 0.3);
+        box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);
+      }
+      
+      .badge.bg-secondary, .badge-secondary, .bg-secondary {
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #e5e7eb !important;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      
+      .badge.bg-danger, .badge-danger, .bg-danger {
+        background: rgba(239, 68, 68, 0.15) !important;
+        color: #fca5a5 !important;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      
+      .badge.bg-light, .badge-light, .text-bg-light {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #f3f4f6 !important;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      /* === NAV PILLS === */
+      .nav-pills .nav-link {
+        color: #9ca3af;
+        border-radius: 8px;
+        padding: 10px 20px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+      
+      .nav-pills .nav-link:hover {
+        color: #d9f99d;
+        background: rgba(163, 230, 53, 0.05);
+      }
+      
+      .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, rgba(63, 98, 18, 0.8) 0%, rgba(101, 163, 13, 0.8) 100%) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 15px rgba(163, 230, 53, 0.2);
+        border: 1px solid rgba(163, 230, 53, 0.3);
+      }
+
+      /* === PROGRESS BARS === */
+      .progress {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+        height: 10px;
+      }
+      
+      .progress-bar {
+        background: linear-gradient(90deg, #3f6212, #65a30d, #a3e635);
+        box-shadow: 0 0 10px rgba(163, 230, 53, 0.3);
+      }
+      .modal-content .table td,
+      .modal-content .table th,
+      .modal-content .table tbody td,
+      .modal-content tbody td,
+      .modal-content td {
+        color: #fff !important;
+      }
+      
+      .modal-content a {
+        color: var(--lemon-dim) !important;
+      }
+      
+      .modal-content a:hover {
+        color: var(--lemon) !important;
+      }
+      
+      /* === SOLVED CHALLENGE - LIME GLOW (Theme Matching) === */
+      .challenge-button.challenge-solved,
+      button.challenge-button.challenge-solved,
+      .btn.challenge-button.challenge-solved {
+        background: linear-gradient(135deg, rgba(163, 230, 53, 0.12) 0%, rgba(132, 204, 22, 0.08) 100%) !important;
+        border: 1px solid rgba(163, 230, 53, 0.35) !important;
+        box-shadow: 
+          0 0 15px rgba(163, 230, 53, 0.15),
+          0 0 30px rgba(163, 230, 53, 0.08) !important;
+        animation: solvedGlow 4s ease-in-out infinite;
+      }
+      
+      .challenge-button.challenge-solved:hover {
+        background: linear-gradient(135deg, rgba(163, 230, 53, 0.18) 0%, rgba(132, 204, 22, 0.12) 100%) !important;
+        border-color: rgba(163, 230, 53, 0.5) !important;
+        box-shadow: 
+          0 0 20px rgba(163, 230, 53, 0.25),
+          0 0 40px rgba(163, 230, 53, 0.12) !important;
+        transform: translateY(-2px);
+      }
+      
+      .challenge-button.challenge-solved p,
+      .challenge-button.challenge-solved .challenge-name {
+        color: rgba(190, 242, 100, 0.9) !important;
+        text-shadow: 0 0 8px rgba(163, 230, 53, 0.3);
+      }
+      
+      .challenge-button.challenge-solved span {
+        color: rgba(163, 230, 53, 0.85) !important;
+        font-weight: 500;
+      }
+      
+      @keyframes solvedGlow {
+        0%, 100% {
+          box-shadow: 
+            0 0 15px rgba(163, 230, 53, 0.15),
+            0 0 30px rgba(163, 230, 53, 0.08);
+        }
+        50% {
+          box-shadow: 
+            0 0 20px rgba(163, 230, 53, 0.2),
+            0 0 40px rgba(163, 230, 53, 0.1);
+        }
       }
       
       /* === TABLES - TRANSPARENT STYLE === */

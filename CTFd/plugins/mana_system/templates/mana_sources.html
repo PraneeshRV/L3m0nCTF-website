@@ -2,8 +2,8 @@
 {% block content %}
 <div class="jumbotron">
     <div class="container">
-        <h1>⚡ Mana Sources</h1>
-        <p class="lead">View mana usage across all teams/users with active instances.</p>
+        <h1>🍋 Juice Usage by Team</h1>
+        <p class="lead">View juice usage across all teams/users with active instances.</p>
     </div>
 </div>
 
@@ -24,9 +24,9 @@
                 <thead>
                     <tr>
                         <th>{{ 'Team' if is_teams_mode else 'User' }}</th>
-                        <th>Mana Used</th>
-                        <th>Mana Remaining</th>
-                        <th>Max Mana</th>
+                        <th>Juice Used</th>
+                        <th>Juice Remaining</th>
+                        <th>Tank Capacity</th>
                         <th>Active Instances</th>
                         <th>Usage</th>
                     </tr>
@@ -40,12 +40,12 @@
                             <br><small class="text-muted">ID: {{ source.source_id }}</small>
                         </td>
                         <td>
-                            <span style="color: #f59e0b; font-weight: 600;">{{ source.mana_used }}</span>
+                            <span style="color: #f59e0b; font-weight: 600;">{{ source.mana_used }} ml</span>
                         </td>
                         <td>
-                            <span style="color: #a3e635; font-weight: 600;">{{ source.mana_remaining }}</span>
+                            <span style="color: #a3e635; font-weight: 600;">{{ source.mana_remaining }} ml</span>
                         </td>
-                        <td>{{ source.max_mana }}</td>
+                        <td>{{ source.max_mana }} ml</td>
                         <td>
                             <span class="badge" style="background: #3b82f6; padding: 5px 10px;">
                                 {{ source.instance_count }} running
@@ -70,7 +70,7 @@
             </table>
             {% else %}
             <div class="text-center py-5">
-                <i class="fas fa-server fa-3x text-muted mb-3"></i>
+                <div style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;">🧃</div>
                 <h4>No Active Instances</h4>
                 <p class="text-muted">No teams or users currently have active container instances.</p>
             </div>

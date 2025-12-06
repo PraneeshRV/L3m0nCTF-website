@@ -1,126 +1,172 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    .mana-container {
-        background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 22, 35, 0.95));
-        border-radius: 16px;
+    /* === LEMONADE JUICE THEME === */
+    .juice-container {
+        background: linear-gradient(135deg, rgba(15, 15, 15, 0.85), rgba(10, 10, 10, 0.9));
+        border-radius: 20px;
         padding: 30px;
         margin-bottom: 30px;
-        border: 1px solid rgba(163, 230, 53, 0.2);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(204, 255, 0, 0.15);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
     }
     
-    .mana-header {
+    .juice-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
     }
     
-    .mana-title {
-        font-size: 28px;
+    .juice-title {
+        font-size: 26px;
         font-weight: 700;
-        color: #a3e635;
+        color: #e5e7eb;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
     }
     
-    .mana-bar-container {
-        background: rgba(0, 0, 0, 0.4);
-        border-radius: 12px;
-        height: 40px;
+    .juice-title .lemon-icon {
+        font-size: 32px;
+    }
+    
+    .juice-title span {
+        color: #a3e635;
+    }
+    
+    .juice-bar-container {
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 16px;
+        height: 48px;
         overflow: hidden;
         position: relative;
-        border: 1px solid rgba(163, 230, 53, 0.3);
+        border: 1px solid rgba(204, 255, 0, 0.2);
     }
     
-    .mana-bar {
+    .juice-bar {
         height: 100%;
-        background: linear-gradient(90deg, #3f6212, #65a30d, #84cc16);
-        border-radius: 12px;
-        transition: width 0.5s ease;
+        background: linear-gradient(90deg, #65a30d, #84cc16, #a3e635);
+        border-radius: 16px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 80px;
+        min-width: 100px;
+        position: relative;
+        overflow: hidden;
     }
     
-    .mana-bar.low {
+    /* Animated juice bubbles */
+    .juice-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(255,255,255,0.15) 50%, 
+            transparent 100%);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .juice-bar.low {
         background: linear-gradient(90deg, #b91c1c, #dc2626, #ef4444);
     }
     
-    .mana-bar.medium {
+    .juice-bar.medium {
         background: linear-gradient(90deg, #b45309, #d97706, #f59e0b);
     }
     
-    .mana-text {
+    .juice-text {
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 700;
         color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
         top: 50%;
         margin-top: -10px;
-    }
-    
-    .mana-stats {
         display: flex;
-        gap: 30px;
-        margin-top: 15px;
+        align-items: center;
+        gap: 8px;
     }
     
-    .mana-stat {
-        display: flex;
-        flex-direction: column;
+    .juice-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
     }
     
-    .mana-stat-label {
-        font-size: 12px;
+    .juice-stat {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .juice-stat-label {
+        font-size: 11px;
         color: #9ca3af;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
     }
     
-    .mana-stat-value {
-        font-size: 20px;
+    .juice-stat-value {
+        font-size: 24px;
         font-weight: 700;
         color: #e5e7eb;
     }
     
+    /* === INSTANCES SECTION === */
     .instances-container {
-        background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 22, 35, 0.95));
-        border-radius: 16px;
-        border: 1px solid rgba(163, 230, 53, 0.2);
+        background: linear-gradient(135deg, rgba(15, 15, 15, 0.85), rgba(10, 10, 10, 0.9));
+        border-radius: 20px;
+        border: 1px solid rgba(204, 255, 0, 0.15);
         overflow: hidden;
+        backdrop-filter: blur(10px);
     }
     
     .instances-header {
-        background: rgba(163, 230, 53, 0.1);
-        padding: 20px 25px;
-        border-bottom: 1px solid rgba(163, 230, 53, 0.2);
+        background: rgba(204, 255, 0, 0.05);
+        padding: 20px 28px;
+        border-bottom: 1px solid rgba(204, 255, 0, 0.1);
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
     
     .instances-title {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 600;
-        color: #a3e635;
+        color: #e5e7eb;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+    }
+    
+    .instances-title i {
+        color: #a3e635;
     }
     
     .instance-count {
-        background: rgba(163, 230, 53, 0.2);
+        background: rgba(204, 255, 0, 0.15);
         color: #a3e635;
-        padding: 4px 12px;
+        padding: 6px 14px;
         border-radius: 20px;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
     }
     
@@ -130,23 +176,27 @@
     
     .instances-table th {
         background: rgba(0, 0, 0, 0.3);
-        padding: 15px 20px;
+        padding: 16px 24px;
         text-align: left;
-        font-size: 12px;
+        font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #9ca3af;
+        letter-spacing: 1.5px;
+        color: #6b7280;
         font-weight: 600;
     }
     
     .instances-table td {
-        padding: 18px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         color: #e5e7eb;
     }
     
-    .instances-table tr:hover {
-        background: rgba(163, 230, 53, 0.05);
+    .instances-table tbody tr {
+        transition: background 0.2s ease;
+    }
+    
+    .instances-table tbody tr:hover {
+        background: rgba(204, 255, 0, 0.03);
     }
     
     .challenge-name {
@@ -157,49 +207,53 @@
     
     .challenge-category {
         font-size: 12px;
-        color: #9ca3af;
-        margin-top: 3px;
+        color: #6b7280;
+        margin-top: 4px;
     }
     
     .connection-info {
         font-family: 'JetBrains Mono', 'Fira Code', monospace;
         background: rgba(0, 0, 0, 0.4);
-        padding: 8px 12px;
-        border-radius: 6px;
+        padding: 10px 14px;
+        border-radius: 8px;
         font-size: 13px;
-        color: #60a5fa;
-        border: 1px solid rgba(96, 165, 250, 0.3);
+        color: #a3e635;
+        border: 1px solid rgba(204, 255, 0, 0.2);
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
     }
     
     .connection-info .copy-btn {
         cursor: pointer;
-        color: #9ca3af;
+        color: #6b7280;
         transition: color 0.2s;
     }
     
     .connection-info .copy-btn:hover {
-        color: #60a5fa;
+        color: #a3e635;
     }
     
-    .mana-cost-badge {
-        background: linear-gradient(135deg, #3f6212, #65a30d);
-        color: white;
-        padding: 5px 12px;
+    .juice-cost-badge {
+        background: linear-gradient(135deg, rgba(163, 230, 53, 0.2), rgba(132, 204, 22, 0.15));
+        color: #a3e635;
+        padding: 6px 14px;
         border-radius: 20px;
         font-size: 13px;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
+        border: 1px solid rgba(163, 230, 53, 0.2);
     }
     
     .time-remaining {
         color: #f59e0b;
         font-weight: 500;
         font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
     
     .time-remaining.expired {
@@ -207,22 +261,23 @@
     }
     
     .stop-btn {
-        background: linear-gradient(135deg, #b91c1c, #dc2626);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 10px 18px;
+        border-radius: 10px;
         font-size: 13px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
     }
     
     .stop-btn:hover {
-        background: linear-gradient(135deg, #991b1b, #b91c1c);
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.5);
         transform: translateY(-1px);
     }
     
@@ -234,75 +289,124 @@
     
     .empty-state {
         text-align: center;
-        padding: 60px 20px;
-        color: #9ca3af;
+        padding: 80px 20px;
+        color: #6b7280;
     }
     
-    .empty-state i {
-        font-size: 48px;
-        color: #4b5563;
+    .empty-state .empty-icon {
+        font-size: 56px;
         margin-bottom: 20px;
+        opacity: 0.3;
     }
     
     .empty-state h3 {
-        font-size: 20px;
+        font-size: 22px;
         color: #e5e7eb;
         margin-bottom: 10px;
+        font-weight: 600;
     }
     
     .empty-state p {
         font-size: 14px;
         max-width: 400px;
-        margin: 0 auto;
+        margin: 0 auto 24px;
+        line-height: 1.6;
+    }
+    
+    .browse-btn {
+        background: linear-gradient(135deg, #84cc16, #65a30d);
+        color: #000;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+    
+    .browse-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(132, 204, 22, 0.3);
+        color: #000;
+        text-decoration: none;
     }
     
     .stack-badge {
-        background: rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.15);
         color: #a78bfa;
-        padding: 3px 8px;
-        border-radius: 4px;
+        padding: 3px 10px;
+        border-radius: 6px;
         font-size: 11px;
-        margin-left: 8px;
+        margin-left: 10px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    /* Page header styling */
+    .page-header {
+        text-align: center;
+        padding: 40px 0;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .page-header .lead {
+        color: #9ca3af;
+        font-size: 16px;
     }
     
     @media (max-width: 768px) {
-        .mana-container, .instances-container {
-            border-radius: 12px;
+        .juice-container, .instances-container {
+            border-radius: 16px;
         }
         
-        .mana-stats {
-            flex-wrap: wrap;
-            gap: 15px;
+        .juice-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
         
         .instances-table th, .instances-table td {
-            padding: 12px 10px;
+            padding: 14px 12px;
             font-size: 13px;
         }
         
         .connection-info {
             font-size: 11px;
         }
+        
+        .page-header h1 {
+            font-size: 28px;
+        }
     }
 </style>
 
 <div class="jumbotron">
-    <div class="container">
-        <h1>⚡ My Instances</h1>
-        <p class="lead">Manage your active challenge instances and mana resources.</p>
+    <div class="container page-header">
+        <h1>🍋 My Instances</h1>
+        <p class="lead">Manage your active challenge instances and lemonade reserves.</p>
     </div>
 </div>
 
 <div class="container">
-    <!-- Mana Status Card -->
-    <div class="mana-container">
-        <div class="mana-header">
-            <div class="mana-title">
-                <i class="fas fa-bolt"></i>
-                Mana Status
+    <!-- Lemonade/Juice Status Card -->
+    <div class="juice-container">
+        <div class="juice-header">
+            <div class="juice-title">
+                <span class="lemon-icon">🧃</span>
+                <span>Juice</span> Reserves
             </div>
             {% if not mana_info.enabled %}
-            <span style="color: #9ca3af;">Mana system is disabled</span>
+            <span style="color: #6b7280; font-size: 14px;">Juice system is disabled</span>
             {% endif %}
         </div>
         
@@ -310,27 +414,27 @@
         {% set percentage = (mana_info.current / mana_info.max * 100) if mana_info.max > 0 else 100 %}
         {% set bar_class = 'low' if percentage < 25 else ('medium' if percentage < 50 else '') %}
         
-        <div class="mana-bar-container">
-            <div class="mana-bar {{ bar_class }}" style="width: {{ percentage }}%"></div>
-            <span class="mana-text">{{ mana_info.current }} / {{ mana_info.max }} Mana</span>
+        <div class="juice-bar-container">
+            <div class="juice-bar {{ bar_class }}" style="width: {{ percentage }}%"></div>
+            <span class="juice-text">🍋 {{ mana_info.current }} / {{ mana_info.max }} ml</span>
         </div>
         
-        <div class="mana-stats">
-            <div class="mana-stat">
-                <span class="mana-stat-label">Available</span>
-                <span class="mana-stat-value" style="color: #a3e635;">{{ mana_info.current }}</span>
+        <div class="juice-stats">
+            <div class="juice-stat">
+                <div class="juice-stat-label">Available</div>
+                <div class="juice-stat-value" style="color: #a3e635;">{{ mana_info.current }}</div>
             </div>
-            <div class="mana-stat">
-                <span class="mana-stat-label">In Use</span>
-                <span class="mana-stat-value" style="color: #f59e0b;">{{ mana_info.used }}</span>
+            <div class="juice-stat">
+                <div class="juice-stat-label">Being Used</div>
+                <div class="juice-stat-value" style="color: #f59e0b;">{{ mana_info.used }}</div>
             </div>
-            <div class="mana-stat">
-                <span class="mana-stat-label">Maximum</span>
-                <span class="mana-stat-value">{{ mana_info.max }}</span>
+            <div class="juice-stat">
+                <div class="juice-stat-label">Tank Capacity</div>
+                <div class="juice-stat-value">{{ mana_info.max }}</div>
             </div>
-            <div class="mana-stat">
-                <span class="mana-stat-label">Cost per Challenge</span>
-                <span class="mana-stat-value">{{ default_cost }}</span>
+            <div class="juice-stat">
+                <div class="juice-stat-label">Cost per Instance</div>
+                <div class="juice-stat-value">{{ default_cost }} ml</div>
             </div>
         </div>
         {% endif %}
@@ -352,7 +456,7 @@
                 <tr>
                     <th>Challenge</th>
                     <th>Connection</th>
-                    <th>Mana Cost</th>
+                    <th>Juice Cost</th>
                     <th>Time Remaining</th>
                     <th>Actions</th>
                 </tr>
@@ -376,13 +480,12 @@
                             <i class="fas fa-copy copy-btn" onclick="copyConnection(this)" title="Copy to clipboard"></i>
                         </div>
                         {% else %}
-                        <span style="color: #6b7280;">No connection info</span>
+                        <span style="color: #4b5563;">No connection info</span>
                         {% endif %}
                     </td>
                     <td>
-                        <span class="mana-cost-badge">
-                            <i class="fas fa-bolt"></i>
-                            {{ instance.total_mana_cost }}
+                        <span class="juice-cost-badge">
+                            🍋 {{ instance.total_mana_cost }} ml
                         </span>
                     </td>
                     <td>
@@ -392,7 +495,7 @@
                             {{ instance.time_remaining }}
                         </span>
                         {% else %}
-                        <span style="color: #6b7280;">No timeout</span>
+                        <span style="color: #4b5563;">No timeout</span>
                         {% endif %}
                     </td>
                     <td>
@@ -407,10 +510,10 @@
         </table>
         {% else %}
         <div class="empty-state">
-            <i class="fas fa-server"></i>
+            <div class="empty-icon">🧃</div>
             <h3>No Active Instances</h3>
-            <p>You don't have any running challenge instances. Go to the Challenges page to launch one!</p>
-            <a href="/challenges" class="btn btn-primary mt-4" style="background: linear-gradient(135deg, #3f6212, #65a30d); border: none;">
+            <p>You don't have any running challenge instances. Your juice reserves are full and ready to go!</p>
+            <a href="/challenges" class="browse-btn">
                 <i class="fas fa-flag"></i> Browse Challenges
             </a>
         </div>
@@ -424,7 +527,7 @@ function copyConnection(btn) {
     navigator.clipboard.writeText(text).then(() => {
         const originalClass = btn.className;
         btn.className = 'fas fa-check copy-btn';
-        btn.style.color = '#10b981';
+        btn.style.color = '#22c55e';
         setTimeout(() => {
             btn.className = originalClass;
             btn.style.color = '';
@@ -432,8 +535,8 @@ function copyConnection(btn) {
     });
 }
 
-function stopInstance(instanceId, manaCost) {
-    if (!confirm(`Stop this instance? You will reclaim ${manaCost} mana.`)) {
+function stopInstance(instanceId, juiceCost) {
+    if (!confirm(`Stop this instance? You will recover ${juiceCost} ml of juice.`)) {
         return;
     }
     
@@ -441,7 +544,6 @@ function stopInstance(instanceId, manaCost) {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Stopping...';
     
-    // Call the Docker challenges API to stop the container
     fetch('/api/v1/container', {
         method: 'DELETE',
         headers: {
@@ -454,19 +556,15 @@ function stopInstance(instanceId, manaCost) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove the row with animation
             const row = document.querySelector(`tr[data-instance-id="${instanceId}"]`);
             row.style.transition = 'opacity 0.3s, transform 0.3s';
             row.style.opacity = '0';
             row.style.transform = 'translateX(20px)';
             setTimeout(() => {
                 row.remove();
-                // Update instance count
                 const countEl = document.querySelector('.instance-count');
                 const currentCount = parseInt(countEl.textContent);
                 countEl.textContent = (currentCount - 1) + ' running';
-                
-                // Reload page to update mana bar
                 location.reload();
             }, 300);
         } else {

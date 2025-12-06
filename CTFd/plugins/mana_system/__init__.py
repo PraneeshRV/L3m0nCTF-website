@@ -610,7 +610,7 @@ def load(app):
     register_plugin_assets_directory(app, base_path='/plugins/mana_system/assets')
     
     # Register menu items
-    register_admin_plugin_menu_bar(title='⚡ Mana Settings', route='/admin/mana_settings')
-    register_user_page_menu_bar(title='Instances', route='/instances')
+    register_admin_plugin_menu_bar(title='🍋 Juice Settings', route='/admin/mana_settings')
+    register_user_page_menu_bar(title='🧃 Instances', route='/instances')
     
     current_app.logger.info("Mana system plugin loaded successfully (calculate-on-demand mode)")
